@@ -3,20 +3,21 @@
  */
 const path = require('path')
 const chokidar = require('chokidar');
-const addIndex = require('./utils/addIndex');
-const addImport = require('./utils/addImport');
+const { addFile, removeFile } = require('./utils/addFile');
 const { setModuleOptions } = require('./utils/moduleOptions');
 const directory = require("./utils/directory");
 
 module.exports = function (options = {}) {
   options = Object.assign({
-    root: path.join(process.cwd(), 'temp'),
-    dirs: [],
+    root: path.join(process.cwd(), 'test/temp'),
+    dirs: ['test', 'test2', 'test3', 'test4'],
     includes: ['.js'],
     excludes: ['.js'],
-    importModuleOnly: false,
   }, options);
+  options.dirs = options.dirs.map(dir => path.join(options.root, dir, '/'));
+
   setModuleOptions(options);
+
   const watcher = chokidar.watch(options.dir, {
     ignored: /(^|[\/\\])\../, // ignore dotfiles
     persistent: true
@@ -25,19 +26,18 @@ module.exports = function (options = {}) {
   watcher
     .on('add', path => {
       directory.add(path);
-      addImport(path);
+      addFile(path);
     })
     .on('unlink', path => {
       directory.remove(path);
-      addImport(path);
+      removeFile(path);
     })
     .on('addDir', path => {
-      addIndex(path);
       directory.add(path);
-      addImport(path);
+      addFile(path);
     })
     .on('unlinkDir', path => {
       directory.remove(path);
-      addImport(path);
+      removeFile(path);
     });
 }
