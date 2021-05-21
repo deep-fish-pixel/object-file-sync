@@ -32,7 +32,7 @@ function getSyncDirs(file, operate) {
 
 function getRelativeDir(dir){
   const { root } = getModuleOptions();
-  return dir.replace(dir, root);
+  return dir.replace(root, '');
 }
 /**
  * 添加默认入口文件index
@@ -62,18 +62,12 @@ function syncDir(target, dist, operate) {
       console.log('=======3', target, dist, exists);
       if (exists && operate === Operate_File_Delete) {
         console.log('=======4');
-        fse.remove(dist)
-          .then(() => {
-            success(`文件同步 删除成功: ${getRelativeDir(dist)}`)
-          })
-          .catch(err => {
-            console.error(err)
-          })
+        fse.removeSync(dist)
+        success(`[文件同步]删除成功: ${getRelativeDir(dist)}`)
       } else if (!exists && operate === Operate_File_Add) {
         console.log('=======5');
-        fse.copy(target, dist)
-          .then(() => success(`文件同步 添加成功: ${getRelativeDir(target)}`))
-          .catch(err => error(err))
+        fse.copySync(target, dist)
+        success(`[文件同步]复制成功: ${getRelativeDir(target)}`)
       }
     });
 }

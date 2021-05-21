@@ -15,6 +15,7 @@ module.exports = function (options = {}) {
     excludes: ['.js'],
   }, options);
   options.dirs = options.dirs.map(dir => path.join(options.root, dir, '/'));
+  options.root = path.join(options.root, '/');
 
   setModuleOptions(options);
 
@@ -28,6 +29,7 @@ module.exports = function (options = {}) {
       directory.add(path);
       addFile(path);
     })
+    .on('change', path => console.log(`File ${path} has been changed`))
     .on('unlink', path => {
       directory.remove(path);
       removeFile(path);
@@ -36,6 +38,7 @@ module.exports = function (options = {}) {
       directory.add(path);
       addFile(path);
     })
+    .on('ready', () => console.log('Initial scan complete. Ready for changes'))
     .on('unlinkDir', path => {
       directory.remove(path);
       removeFile(path);
