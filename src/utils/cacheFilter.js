@@ -1,4 +1,8 @@
-const { Operate_File_Add, Operate_File_Delete }  = require('./constants');
+const {
+  Operate_File_Add,
+  Operate_File_Change,
+  Operate_File_Delete
+}  = require('./constants');
 
 const cache = new Map();
 
@@ -8,6 +12,10 @@ function getTime(time, operate){
       return time + 100;
     case Operate_File_Delete:
       return time + 100;
+    case Operate_File_Change:
+      return time + 200;
+    default:
+      return time + 50;
   }
 }
 

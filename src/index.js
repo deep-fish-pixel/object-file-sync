@@ -3,7 +3,7 @@
  */
 const path = require('path')
 const chokidar = require('chokidar');
-const { addFile, removeFile } = require('./utils/addFile');
+const { addFile, removeFile, changeFile } = require('./utils/addFile');
 const { setModuleOptions } = require('./utils/moduleOptions');
 const directory = require("./utils/directory");
 
@@ -29,7 +29,10 @@ module.exports = function (options = {}) {
       directory.add(path);
       addFile(path);
     })
-    .on('change', path => console.log(`File ${path} has been changed`))
+    .on('change', path => {
+      console.log('Initial scan complete. Ready for changes')
+      changeFile(path);
+    })
     .on('unlink', path => {
       directory.remove(path);
       removeFile(path);
@@ -38,7 +41,7 @@ module.exports = function (options = {}) {
       directory.add(path);
       addFile(path);
     })
-    .on('ready', () => console.log('Initial scan complete. Ready for changes'))
+    // .on('ready', () => console.log('Initial scan complete. Ready for changes'))
     .on('unlinkDir', path => {
       directory.remove(path);
       removeFile(path);
