@@ -1,4 +1,5 @@
 const diff = require('fast-diff');
+const Diff = require('diff');
 const { getFile, writeFile } = require("./cacheFile");
 
 module.exports = function fileReplace(target, dist) {
@@ -6,42 +7,114 @@ module.exports = function fileReplace(target, dist) {
     .then(([targetContent, distContent]) => {
       // console.log(target, dist);
       // console.log(diff(targetContent, distContent, 1));
-      const diffList = splitLine(diff(targetContent, distContent, 1));
+      // const diffList = splitLine(diff(targetContent, distContent, 1));
+      const diffList = Diff.diffLines(distContent, targetContent);
       console.log(diffList)
-      let distValue = '';
-      diffList.forEach(([operate, value], index) => {
-        switch (operate) {
-          case diff.EQUAL:
-            distValue += value;
-            break;
-          case diff.INSERT:
-            debugger
-            const { isValue: isInsertValue } = getLine(diffList, index);
-            if (isInsertValue) {
-              distValue += value;
-            }
-            break;
-          case diff.DELETE:
-            debugger
-            const { isValue: isDeleteValue } = getLine(diffList, index, true);
-            if (!isDeleteValue) {
-              distValue += value;
-            }
-            break;
-          default:
-            distValue += '';
-          /*case diff.DELETE:*/
-        }
-        /*if (operate === diff.DELETE ) {
-          const newValue = getLine(diffList, index);
-          if (isKeyValues(newValue)) {
-
-          }
-        }*/
-      });
+      const {
+        removedObject,
+        changeKeysObject
+      } = getKeyValueObjects(diffList);
+      console.log('====1===', changeKeysObject)
+      const distValue = renderContent(diffList, removedObject, changeKeysObject);
       console.log(distValue)
+
       // writeFile(dist, distValue);
     });
+}
+
+function renderContent(diffList, removedObject, changeKeysObject){
+  let content = '';
+  diffList.forEach( diff => {
+    const { added, removed, value } = diff;
+    if (added) {
+      const values = value.split(/,\n/);
+      content += values.map(value => {
+        return value.replace(/(['"]?)([\w\-]+)(['"]?\s*:\s*['"]?)([\s\S]*)(['"]?)([,]\s*|\s*$)/g, (all, $1, key, $3, value, $5) => {
+          const changeKey = changeKeysObject[key] || key;
+          return `${$1}${changeKey}${$3}${removedObject[changeKey] || value}${$5}`;
+        });
+      }).join(',\n');
+    } else if (!removed) {
+      content += value;
+    }
+  })
+  console.log(content)
+  return content;
+}
+
+function getKeyValueObjects(diffList) {
+  const removedObject = {};
+  const changeKeysObject = {};
+
+  diffList.forEach( (diff, index) => {
+    if (diff.removed) {
+      const value = diff.value;
+      const values = value.split(/,\n\s*|\n\s*$/);
+      console.log(values, value, '123123123123')
+
+      values.forEach(value => {
+        if (value === undefined) {
+          console.log(values)
+          console.log('==========!value.replace')
+        }
+        value.replace(/['"]?([\w\-]+)['"]?\s*:\s*['"]?([\s\S]*)['"]?([,]\s*|\s*$)/g, (all, key, value) => {
+          console.log(all, key, value, '======');
+          removedObject[key] = value;
+        });
+      });
+    } else if (diff.added) {
+      const value = diff.value;
+      const values = value.split(/,\n\s*|\n\s*$/);
+      console.log(values, value, '123123123123')
+      debugger
+
+      values.forEach(value => {
+        if (value === undefined) {
+          console.log(values)
+          console.log('==========!value.replace')
+        }
+        value.replace(/['"]?([\w\->]+)['"]?\s*:\s*['"]?([\s\S]*)['"]?([,]\s*|\s*$)/g, (all, key, $2) => {
+          console.log(all, key, value, '======add=======');
+          if (key.match(/[\w\-]+>/)) {
+            const [fromKey, changeKey] = key.split('>');
+            changeKeysObject[changeKey] = fromKey;
+          }
+        });
+      });
+      diff.value = diff.value.replace(/(['"]?)([\w\-]+)>([\w\-]*)(['"]?\s*:\s*['"]?)/, (all, $1, fromKey, changeKey, $3) => {
+        return `${$1}${changeKey}${$3}`
+      });
+
+    }
+  })
+  console.log(removedObject)
+  return {
+    removedObject,
+    changeKeysObject
+  };
+}
+
+function getChangeKeysObject(diffList) {
+  const changeKeysObject = {};
+  diffList.forEach( diff => {
+    if (diff.removed) {
+      const value = diff.value;
+      const values = value.split(/,\n\s*|\n\s*$/);
+      console.log(values, value, '123123123123')
+
+      values.forEach(value => {
+        if (value === undefined) {
+          console.log(values)
+          console.log('==========!value.replace')
+        }
+        value.replace(/['"]?([\w\-]+)['"]?\s*:\s*['"]?([\s\S]*)['"]?([,]\s*|\s*$)/g, (all, $1, $2) => {
+          console.log(all, $1, $2, '======');
+          removedObject[$1] = $2;
+        });
+      });
+    }
+  })
+  return changeKeysObject;
 }
 
 const startLineFlag = /^[ \t]*\n[ \t]*/;

@@ -10,7 +10,7 @@ const directory = require("./utils/directory");
 module.exports = function (options = {}) {
   options = Object.assign({
     root: path.join(process.cwd(), 'test/temp'),
-    dirs: ['test', 'test2', 'test3', 'test4'],
+    dirs: ['test', 'test2'],
     includes: ['.js'],
     excludes: ['.js'],
   }, options);

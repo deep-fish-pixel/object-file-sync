@@ -57,6 +57,7 @@ function removeFile(dir) {
 
 function changeFile(dir) {
   console.log('changeFile')
+  debugger
   getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
     console.log('getSyncDirs')
     syncDir(dir, dist, Operate_File_Change);
@@ -69,6 +70,7 @@ function changeFile(dir) {
  * @param dist
  */
 function syncDir(target, dist, operate) {
+  console.log('operate', operate)
   fse.pathExists(dist)
     .then(exists => {
       // console.log('=======3', target, dist, exists);
