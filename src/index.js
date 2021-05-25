@@ -4,7 +4,7 @@
 const path = require('path')
 const chokidar = require('chokidar');
 const addImport = require('./utils/addImport');
-const { addFile, removeFile, changeFile } = require('./utils/addFile');
+const { addFile, removeFile, changeFile } = require('./core/addFile');
 const { setModuleOptions } = require('./utils/moduleOptions');
 const directory = require("./utils/directory");
 

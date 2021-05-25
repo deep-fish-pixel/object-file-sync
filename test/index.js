@@ -2,9 +2,9 @@
  * 测试开始
  */
 const path = require('path');
-const autoImportModule = require('../src/index')
+const objectFileSync = require('../src/index')
 
-autoImportModule({
+objectFileSync({
   dir: path.join(process.cwd(), 'test/locales'),
   extension: '.js',
 });

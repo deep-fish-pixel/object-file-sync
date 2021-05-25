@@ -1,15 +1,15 @@
 const path = require('path');
 const fse = require('fs-extra')
-const cacheFilter = require("./cacheFilter");
-const { success, error } = require("./log");
-const { getModuleOptions } = require('./moduleOptions');
+const cacheFilter = require("../utils/cacheFilter");
+const { success } = require("../utils/log");
+const { getModuleOptions } = require('../utils/moduleOptions');
 const fileReplace = require('./fileReplace');
-const { getFile } = require("./cacheFile");
+const { getFile } = require("../utils/cacheFile");
 const {
   Operate_File_Add,
   Operate_File_Change,
   Operate_File_Delete
-}  = require('./constants');
+}  = require('../utils/constants');
 
 function getSyncDirs(file, operate) {
   const { dirs } = getModuleOptions();
@@ -57,9 +57,7 @@ function removeFile(dir) {
 }
 
 function changeFile(dir) {
-  console.log('changeFile')
   getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
-    console.log('getSyncDirs')
     syncDir(dir, dist, Operate_File_Change);
   });
 }
@@ -70,10 +68,8 @@ function changeFile(dir) {
  * @param dist
  */
 function syncDir(target, dist, operate) {
-  console.log('operate', operate)
   fse.pathExists(dist)
     .then(exists => {
-      // console.log('=======3', target, dist, exists);
       if (operate === Operate_File_Add) {
         if (!exists) {
           fse.copySync(target, dist);
@@ -88,9 +84,9 @@ function syncDir(target, dist, operate) {
         success(`[文件同步]删除成功: ${getRelativeDir(dist)}`)
       } else if (operate === Operate_File_Change) {
         if (exists) {
-          fileReplace(target, dist)
+          fileReplace(target, dist);
         } else {
-          fse.copy(target, dist)
+          fse.copy(target, dist);
         }
         success(`[文件同步]修改成功: ${getRelativeDir(target)}`)
       }
