@@ -4,6 +4,7 @@ const cacheFilter = require("./cacheFilter");
 const { success, error } = require("./log");
 const { getModuleOptions } = require('./moduleOptions');
 const fileReplace = require('./fileReplace');
+const { getFile } = require("./cacheFile");
 const {
   Operate_File_Add,
   Operate_File_Change,
@@ -57,7 +58,6 @@ function removeFile(dir) {
 
 function changeFile(dir) {
   console.log('changeFile')
-  debugger
   getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
     console.log('getSyncDirs')
     syncDir(dir, dist, Operate_File_Change);
@@ -74,9 +74,14 @@ function syncDir(target, dist, operate) {
   fse.pathExists(dist)
     .then(exists => {
       // console.log('=======3', target, dist, exists);
-      if (!exists && operate === Operate_File_Add) {
-        fse.copySync(target, dist)
-        success(`[文件同步]复制成功: ${getRelativeDir(target)}`)
+      if (operate === Operate_File_Add) {
+        if (!exists) {
+          fse.copySync(target, dist);
+          success(`[文件同步]复制成功: ${getRelativeDir(target)}`);
+        }
+        // 读取文件内容，以便做第一次修改的对比处理
+        getFile(target);
+        getFile(dist);
       }
       else if (exists && operate === Operate_File_Delete) {
         fse.removeSync(dist)

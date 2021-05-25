@@ -3,14 +3,15 @@
  */
 const path = require('path')
 const chokidar = require('chokidar');
+const addImport = require('./utils/addImport');
 const { addFile, removeFile, changeFile } = require('./utils/addFile');
 const { setModuleOptions } = require('./utils/moduleOptions');
 const directory = require("./utils/directory");
 
 module.exports = function (options = {}) {
   options = Object.assign({
-    root: path.join(process.cwd(), 'test/temp'),
-    dirs: ['test', 'test2'],
+    root: path.join(process.cwd(), 'test/locales'),
+    dirs: ['zh-CN', 'en-US'],
     includes: ['.js'],
     excludes: ['.js'],
   }, options);
@@ -28,6 +29,7 @@ module.exports = function (options = {}) {
     .on('add', path => {
       directory.add(path);
       addFile(path);
+      addImport(path);
     })
     .on('change', path => {
       console.log('Initial scan complete. Ready for changes')
@@ -36,14 +38,17 @@ module.exports = function (options = {}) {
     .on('unlink', path => {
       directory.remove(path);
       removeFile(path);
+      addImport(path);
     })
     .on('addDir', path => {
       directory.add(path);
       addFile(path);
+      addImport(path);
     })
     // .on('ready', () => console.log('Initial scan complete. Ready for changes'))
     .on('unlinkDir', path => {
       directory.remove(path);
       removeFile(path);
+      addImport(path);
     });
 }
