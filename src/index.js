@@ -4,8 +4,9 @@
 const path = require('path')
 const chokidar = require('chokidar');
 const addImport = require('./utils/addImport');
-const { addFile, removeFile, changeFile } = require('./core/addFile');
+const { addFile, removeFile, changeFile } = require('./core/fileOperate');
 const { setModuleOptions } = require('./utils/moduleOptions');
+const CacheFilesKeyMap = require('./core/cacheFilesKeyMap');
 const directory = require("./utils/directory");
 
 module.exports = function (options = {}) {
@@ -19,6 +20,8 @@ module.exports = function (options = {}) {
   options.root = path.join(options.root, '/');
 
   setModuleOptions(options);
+  CacheFilesKeyMap.createSingletonKeyMap(options.dirs);
+
 
   const watcher = chokidar.watch(options.dir, {
     ignored: /(^|[\/\\])\../, // ignore dotfiles

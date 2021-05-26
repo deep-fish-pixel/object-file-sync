@@ -1,13 +1,9 @@
 const fse = require('fs-extra');
-const {getModuleOptions} = require("./moduleOptions");
+const { getRelativeDir } = require("./moduleOptions");
 const { error } = require("./log");
+const CacheFilesKeyMap = require('../core/cacheFilesKeyMap');
 
 const cache = new Map();
-
-function getRelativeDir(dir){
-  const { root } = getModuleOptions();
-  return dir.replace(root, '');
-}
 
 module.exports = {
   getFile(file, noCache) {
@@ -16,7 +12,10 @@ module.exports = {
       return Promise.resolve(content);
     } else {
       return fse.readFile(file, 'utf8').then((content) => {
+        // 缓存文件
         cache.set(file, content);
+        // 缓存文件的键值
+        CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
         return content;
       }).catch((e) => {
         console.log(e)
@@ -26,7 +25,10 @@ module.exports = {
   },
   writeFile(file, content) {
     return fse.writeFile(file, content).then((content) => {
+      // 缓存文件
       cache.set(file, content);
+      // 缓存文件的键值
+      CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
       return content;
     }).catch((e) => {
       console.log(e)

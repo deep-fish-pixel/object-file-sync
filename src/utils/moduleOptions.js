@@ -10,4 +10,11 @@ module.exports = {
   setModuleOptions(rootName){
     this.options = rootName;
   },
+  getRelativeDir(dir){
+    if(typeof this.getModuleOptions !== 'function'){
+      debugger
+    }
+    const { root } = this.getModuleOptions();
+    return dir.replace(root, '');
+  }
 };

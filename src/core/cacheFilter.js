@@ -2,7 +2,7 @@ const {
   Operate_File_Add,
   Operate_File_Change,
   Operate_File_Delete
-}  = require('./constants');
+}  = require('./constants/fileOperate');
 
 const cache = new Map();
 

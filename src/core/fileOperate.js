@@ -1,15 +1,17 @@
 const path = require('path');
 const fse = require('fs-extra')
-const cacheFilter = require("../utils/cacheFilter");
+const cacheFilter = require("./cacheFilter");
 const { success } = require("../utils/log");
-const { getModuleOptions } = require('../utils/moduleOptions');
+const { getModuleOptions, getRelativeDir } = require('../utils/moduleOptions');
 const fileReplace = require('./fileReplace');
 const { getFile } = require("../utils/cacheFile");
+const CacheFilesKeyMap = require('./cacheFilesKeyMap');
+
 const {
   Operate_File_Add,
   Operate_File_Change,
   Operate_File_Delete
-}  = require('../utils/constants');
+}  = require('./constants/fileOperate');
 
 function getSyncDirs(file, operate) {
   const { dirs } = getModuleOptions();
@@ -20,9 +22,6 @@ function getSyncDirs(file, operate) {
       syncDirs.push(dir);
     } else {
       relativeDir = file.replace(dir, '');
-      if (!dir || !relativeDir) {
-        console.log(file, dir, relativeDir);
-      }
     }
   });
   if (!relativeDir) {
@@ -33,33 +32,6 @@ function getSyncDirs(file, operate) {
   });
   cacheFilter([file], operate);
   return cacheFilter(absoluteDirs, operate);
-}
-
-
-function getRelativeDir(dir){
-  const { root } = getModuleOptions();
-  return dir.replace(root, '');
-}
-/**
- * 添加默认入口文件index
- * @param dir
- */
-function addFile(dir) {
-  getSyncDirs(dir, Operate_File_Add).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Add);
-  });
-}
-
-function removeFile(dir) {
-  getSyncDirs(dir, Operate_File_Delete).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Delete);
-  });
-}
-
-function changeFile(dir) {
-  getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Change);
-  });
 }
 
 /**
@@ -80,7 +52,8 @@ function syncDir(target, dist, operate) {
         getFile(dist);
       }
       else if (exists && operate === Operate_File_Delete) {
-        fse.removeSync(dist)
+        fse.removeSync(dist);
+        CacheFilesKeyMap.getSingletonCacheKeyMap().clearFileCache(dist);
         success(`[文件同步]删除成功: ${getRelativeDir(dist)}`)
       } else if (operate === Operate_File_Change) {
         if (exists) {
@@ -91,6 +64,34 @@ function syncDir(target, dist, operate) {
         success(`[文件同步]修改成功: ${getRelativeDir(target)}`)
       }
     });
+}
+
+/**
+ * 添加文件
+ * @param dir
+ */
+function addFile(dir) {
+  getSyncDirs(dir, Operate_File_Add).forEach((dist) => {
+    syncDir(dir, dist, Operate_File_Add);
+  });
+}
+/**
+ * 删除文件
+ * @param dir
+ */
+function removeFile(dir) {
+  getSyncDirs(dir, Operate_File_Delete).forEach((dist) => {
+    syncDir(dir, dist, Operate_File_Delete);
+  });
+}
+/**
+ * 修改文件
+ * @param dir
+ */
+function changeFile(dir) {
+  getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
+    syncDir(dir, dist, Operate_File_Change);
+  });
 }
 
 

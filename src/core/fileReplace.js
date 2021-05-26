@@ -1,7 +1,7 @@
 const Diff = require('diff');
 const { getFile, writeFile } = require("../utils/cacheFile");
+const { KeyMapExpReg, LineSeparateExpReg } = require("./constants/regExp");
 
-const keyMapExpReg = /['"]?([\w\-]+)['"]?\s*:\s*['"]?([\s\S]*)['"]?([,]\s*|\s*$)/g;
 
 module.exports = function fileReplace(target, dist) {
   Promise.all([getFile(target), getFile(target, true), getFile(dist)])
@@ -17,7 +17,6 @@ module.exports = function fileReplace(target, dist) {
       Object.assign(changeKeysObject, getChangeKeysObject(diffOldTargetList));
 
       console.log('====1===', changeKeysObject)
-      debugger
       const distValue = renderContent(diffList, removedObject, changeKeysObject);
       console.log(distValue)
 
@@ -34,8 +33,9 @@ function renderContent(diffList, removedObject, changeKeysObject){
   diffList.forEach( diff => {
     const { added, removed, value } = diff;
     if (added) {
-      const values = value.split(/,\n/);
+      const values = value.split(LineSeparateExpReg);
       content += values.map(value => {
+        // 对修改内容的键值对进行替换处理，便于内容保持同步
         return value.replace(/(['"]?)([\w\-]+)(['"]?\s*:\s*['"]?)([\s\S]*)(['"]?)([,]\s*|\s*$)/g, (all, $1, key, $3, value, $5) => {
           const changeKey = changeKeysObject[key] || key;
           return `${$1}${key}${$3}${removedObject[changeKey] || value}${$5}`;
@@ -61,7 +61,7 @@ function getAddedContent(diffList) {
 
 function getKeyValueByLine(value) {
   let key, keyValue;
-  value.replace(keyMapExpReg, (all, $1, $2) => {
+  value.replace(KeyMapExpReg, (all, $1, $2) => {
     key = $1;
     keyValue = $2;
   });
@@ -93,19 +93,19 @@ function getKeyValueObjects(diffList) {
   diffList.forEach( (diff, index) => {
     const { added, removed, value } = diff;
     if (removed) {
-      const values = value.split(/,\n\s*|\n\s*$/);
+      const values = value.split(LineSeparateExpReg);
       console.log(values, value, '123123123123')
 
       values.forEach(value => {
-        value.replace(keyMapExpReg, (all, key, value) => {
+        value.replace(KeyMapExpReg, (all, key, value) => {
           console.log(all, key, value, '======');
           removedObject[key] = value;
         });
       });
     } else if (added) {
-      const values = value.split(/,\n\s*|\n\s*$/);
+      const values = value.split(LineSeparateExpReg);
       values.forEach(value => {
-        value.replace(/['"]?([\w\->]+)['"]?\s*:\s*['"]?([\s\S]*)['"]?([,]\s*|\s*$)/g, (all, key, $2) => {
+        value.replace(KeyMapExpReg, (all, key, $2) => {
           console.log(all, key, value, '======add=======');
           if (key.match(/[\w\-]+>/)) {
             const [fromKey, changeKey] = key.split('>');
@@ -113,7 +113,7 @@ function getKeyValueObjects(diffList) {
           }
         });
       });
-      diff.value = value.replace(/(['"]?)([\w\-]+)>([\w\-]*)(['"]?\s*:\s*['"]?)/, (all, $1, fromKey, changeKey, $3) => {
+      diff.value = value.replace(KeyMapExpReg, (all, $1, fromKey, changeKey, $3) => {
         return `${$1}${changeKey}${$3}`
       });
 
