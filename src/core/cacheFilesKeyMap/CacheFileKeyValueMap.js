@@ -1,4 +1,4 @@
-const { LineSeparateExpReg, KeyMapExpReg } = require("../constants/regExp");
+const { LineSeparateExpReg, KeyMapSingleExpReg } = require("../constants/regExp");
 const { error } = require("../../utils/log");
 const { getRelativeDir } = require('../../utils/moduleOptions');
 
@@ -14,10 +14,13 @@ function CacheFileKeyValueMap(file, content, cacheDirKeyMap) {
 }
 
 CacheFileKeyValueMap.prototype.addContent = function (content) {
+  if (!content) {
+    debugger
+  }
   const lines = content.split(LineSeparateExpReg);
   const relativeDir = getRelativeDir(this.file);
   lines.forEach(line => {
-    const matches = line.match(KeyMapExpReg);
+    const matches = line.match(KeyMapSingleExpReg);
     if (matches) {
       const [_all, key, value] = matches;
       let otherFile;
@@ -31,6 +34,7 @@ CacheFileKeyValueMap.prototype.addContent = function (content) {
         error(`[文件同步]发现${relativeDir}与${otherFile}有相同value: ${value}`);
       }
       this.cacheKeyMap.set(key, value);
+      this.cacheValueMap.set(value, key);
     }
   });
 }

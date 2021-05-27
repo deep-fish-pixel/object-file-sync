@@ -1,20 +1,27 @@
-module.exports = {
-  options: {
-    dir: '',
-    extension: '',
-    importModuleOnly: false,
-  },
-  getModuleOptions(){
-    return this.options;
-  },
-  setModuleOptions(rootName){
-    this.options = rootName;
-  },
-  getRelativeDir(dir){
-    if(typeof this.getModuleOptions !== 'function'){
-      debugger
-    }
-    const { root } = this.getModuleOptions();
-    return dir.replace(root, '');
+const _options = {
+  dir: '',
+  extension: '',
+  importModuleOnly: false,
+};
+
+function getModuleOptions(){
+  return _options;
+}
+
+function setModuleOptions(options) {
+  Object.assign(_options, options);
+}
+
+function getRelativeDir(dir) {
+  if(typeof getModuleOptions !== 'function'){
+    debugger
   }
+  const { root } = getModuleOptions();
+  return dir.replace(root, '');
+}
+
+module.exports = {
+  getModuleOptions,
+  setModuleOptions,
+  getRelativeDir
 };

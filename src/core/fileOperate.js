@@ -95,8 +95,8 @@ function changeFile(dir) {
 }
 
 
-Object.assign(module.exports, {
+module.exports = {
   addFile,
   changeFile,
   removeFile,
-});
+};

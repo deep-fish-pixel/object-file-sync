@@ -1,4 +1,4 @@
-const { LineSeparateExpReg, KeyMapExpReg } = require("./constants/regExp");
+const { LineSeparateExpReg, KeyMapRegExp } = require("./constants/regExp");
 
 const cache = new Map();
 

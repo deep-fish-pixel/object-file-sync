@@ -1,12 +1,19 @@
 const CacheDirsKeyMap = require('./CacheDirsKeyMap');
 
-Object.assign(module.exports, {
-  singletonKeyMap: null,
-  createSingletonKeyMap(dirs){
-    this.singletonKeyMap = new CacheDirsKeyMap(dirs)
-  },
-  getSingletonCacheKeyMap() {
-    return this.singletonKeyMap;
+let singletonKeyMap = null;
+
+function createSingletonKeyMap(dirs){
+  if (!singletonKeyMap) {
+    singletonKeyMap = new CacheDirsKeyMap(dirs)
   }
-});
+}
+
+function getSingletonCacheKeyMap() {
+  return singletonKeyMap;
+}
+
+module.exports = {
+  createSingletonKeyMap,
+  getSingletonCacheKeyMap,
+};
 

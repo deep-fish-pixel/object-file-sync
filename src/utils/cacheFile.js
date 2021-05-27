@@ -3,17 +3,17 @@ const { getRelativeDir } = require("./moduleOptions");
 const { error } = require("./log");
 const CacheFilesKeyMap = require('../core/cacheFilesKeyMap');
 
-const cache = new Map();
+const cacheFileMap = new Map();
 
 module.exports = {
   getFile(file, noCache) {
-    const content = noCache ? false : cache.get(file);
+    const content = noCache ? false : cacheFileMap.get(file);
     if (content) {
       return Promise.resolve(content);
     } else {
       return fse.readFile(file, 'utf8').then((content) => {
         // 缓存文件
-        cache.set(file, content);
+        cacheFileMap.set(file, content);
         // 缓存文件的键值
         CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
         return content;
@@ -24,9 +24,9 @@ module.exports = {
     }
   },
   writeFile(file, content) {
-    return fse.writeFile(file, content).then((content) => {
+    return fse.writeFile(file, content).then(() => {
       // 缓存文件
-      cache.set(file, content);
+      cacheFileMap.set(file, content);
       // 缓存文件的键值
       CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
       return content;
