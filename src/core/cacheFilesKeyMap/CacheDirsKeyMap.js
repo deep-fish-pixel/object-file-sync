@@ -1,4 +1,6 @@
 const CacheDirKeyMap = require("./CacheDirKeyMap");
+const {File_Key_Value_Validate} = require("../constants/logMessage");
+const {getRelativeDir} = require("../../utils/moduleOptions");
 const { error } = require("../../utils/log");
 
 function CacheDirsKeyMap(dirs) {
@@ -19,7 +21,7 @@ CacheDirsKeyMap.prototype.addFileCache = function (file, content) {
   if (dirCache) {
     dirCache.addFileCache(file, content);
   } else {
-    error('[文件键值缓存]找不到根目录配置', file);
+    error(File_Key_Value_Validate, getRelativeDir(file));
   }
 }
 
@@ -28,7 +30,7 @@ CacheDirsKeyMap.prototype.getValue = function (dir, key) {
   if (dirCache) {
     return dirCache.getValue(key);
   } else {
-    error('[文件键值缓存]找不到根目录配置', dir);
+    error(File_Key_Value_Validate, getRelativeDir(dir));
   }
 }
 
@@ -37,7 +39,7 @@ CacheDirsKeyMap.prototype.hasKey = function (dir, key) {
   if (dirCache) {
     return dirCache.hasKey(key);
   } else {
-    error('[文件键值缓存]找不到根目录配置', dir);
+    error(File_Key_Value_Validate, getRelativeDir(dir));
   }
 }
 
@@ -46,7 +48,7 @@ CacheDirsKeyMap.prototype.clearFileCache = function (file) {
   if (dirCache) {
     return dirCache.clearFileCache(file);
   } else {
-    error('[文件键值缓存]找不到根目录配置', dir);
+    error(File_Key_Value_Validate, getRelativeDir(dir));
   }
 }
 

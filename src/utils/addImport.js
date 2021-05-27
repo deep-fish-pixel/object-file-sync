@@ -61,7 +61,7 @@ function writeImportFile(parentDirIndex, files){
   const data = new Uint8Array(Buffer.from(`${importModule}` + executeByCondition(importModuleOnly, '', `export default {${ouputModule}};`) + `\n`));
   fs.writeFile(parentDirIndex, data, (err) => {
     if (err) throw err;
-    success(`自动导入并组装模块 ${parentDirIndex.replace(process.cwd(), '')}`);
+    success(`[自动导入] 组装模块成功: ${parentDirIndex.replace(process.cwd(), '')}`);
   });
 }
 

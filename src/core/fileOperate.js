@@ -45,7 +45,7 @@ function syncDir(target, dist, operate) {
       if (operate === Operate_File_Add) {
         if (!exists) {
           fse.copySync(target, dist);
-          success(`[文件同步]复制成功: ${getRelativeDir(target)}`);
+          success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`);
         }
         // 读取文件内容，以便做第一次修改的对比处理
         getFile(target);
@@ -54,14 +54,14 @@ function syncDir(target, dist, operate) {
       else if (exists && operate === Operate_File_Delete) {
         fse.removeSync(dist);
         CacheFilesKeyMap.getSingletonCacheKeyMap().clearFileCache(dist);
-        success(`[文件同步]删除成功: ${getRelativeDir(dist)}`)
+        success(`[文件同步] 删除成功: ${getRelativeDir(dist)}`)
       } else if (operate === Operate_File_Change) {
         if (exists) {
           fileReplace(target, dist);
         } else {
           fse.copy(target, dist);
         }
-        success(`[文件同步]修改成功: ${getRelativeDir(target)}`)
+        success(`[文件同步] 修改成功: ${getRelativeDir(dist)}`)
       }
     });
 }

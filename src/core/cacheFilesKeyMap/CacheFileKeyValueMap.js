@@ -27,13 +27,13 @@ CacheFileKeyValueMap.prototype.addContent = function (content) {
     if (isValidateValue(key) && isValidateValue(value)) {
       let otherFile;
       if (this.cacheKeyMap.has(key)) {
-        error(`[文件同步]${relativeDir}文件有相同key值:  ${key}`);
+        error(`[文件验证] ${relativeDir}文件有相同key值:  ${key}`);
       } else if (this.cacheDirKeyMap && (otherFile = this.cacheDirKeyMap.hasKey(key))) {
-        error(`[文件同步]${relativeDir}与${otherFile}文件有相同key值: ${key}`);
+        error(`[文件验证] ${relativeDir}与${getRelativeDir(otherFile)}文件有相同key值: ${key}`);
       } else if (this.cacheValueMap.has(value)) {
-        error(`[文件同步]${relativeDir}文件有相同value值:  ${value}`);
+        error(`[文件验证] ${relativeDir}文件有相同value值:  ${value}`);
       } else if (this.cacheDirKeyMap && (otherFile = this.cacheDirKeyMap.hasValue(value))) {
-        error(`[文件同步]${relativeDir}与${otherFile}文件有相同value值: ${value}`);
+        error(`[文件验证] ${relativeDir}与${getRelativeDir(otherFile)}文件有相同value值: ${value}`);
       }
       this.cacheKeyMap.set(key, value);
       this.cacheValueMap.set(value, key);
