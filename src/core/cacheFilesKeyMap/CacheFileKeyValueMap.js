@@ -1,6 +1,8 @@
-const { LineSeparateExpReg, KeyMapSingleExpReg } = require("../constants/regExp");
+const { LineSeparateExpReg } = require("../constants/regExp");
 const { error } = require("../../utils/log");
 const { getRelativeDir } = require('../../utils/moduleOptions');
+const getKeyValueByRepalceLine = require("../utils/string/getKeyValueByRepalceLine");
+const isValidateValue = require("../utils/basicType/isValidateValue");
 
 function CacheFileKeyValueMap(file, content, cacheDirKeyMap) {
   this.cacheKeyMap = new Map();
@@ -14,15 +16,15 @@ function CacheFileKeyValueMap(file, content, cacheDirKeyMap) {
 }
 
 CacheFileKeyValueMap.prototype.addContent = function (content) {
-  if (!content) {
-    debugger
-  }
   const lines = content.split(LineSeparateExpReg);
   const relativeDir = getRelativeDir(this.file);
   lines.forEach(line => {
-    const matches = line.match(KeyMapSingleExpReg);
-    if (matches) {
-      const [_all, key, value] = matches;
+    let key, value;
+    getKeyValueByRepalceLine(line, (all, $1, keyMatch, $3, valueMatch) => {
+      key = keyMatch;
+      value = valueMatch;
+    });
+    if (isValidateValue(key) && isValidateValue(value)) {
       let otherFile;
       if (this.cacheKeyMap.has(key)) {
         error(`[文件同步]发现${relativeDir}有相同key:  ${key}`);
