@@ -13,7 +13,7 @@ module.exports = function (syncDirRoot, syncDirs) {
   } else if (syncDirRoot) {
     return fse.readdir(syncDirRoot).then(dirs => {
       return dirs.map(dir => {
-        return path.join(syncDirRoot, dir, '/')
+        return path.join(syncDirRoot, dir)
       }).filter(dir => {
         if (!dir.match(/\/\.[\w-]+\//)) {
           return fse.statSync(dir).isDirectory();

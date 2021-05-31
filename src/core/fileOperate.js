@@ -70,7 +70,7 @@ function syncDir(target, dist, operate) {
  * 添加文件
  * @param dir
  */
-function addFile(dir) {
+function addFileSync(dir) {
   getSyncDirs(dir, Operate_File_Add).forEach((dist) => {
     syncDir(dir, dist, Operate_File_Add);
   });
@@ -79,7 +79,7 @@ function addFile(dir) {
  * 删除文件
  * @param dir
  */
-function removeFile(dir) {
+function removeFileSync(dir) {
   getSyncDirs(dir, Operate_File_Delete).forEach((dist) => {
     syncDir(dir, dist, Operate_File_Delete);
   });
@@ -88,7 +88,7 @@ function removeFile(dir) {
  * 修改文件
  * @param dir
  */
-function changeFile(dir) {
+function changeFileSync(dir) {
   getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
     syncDir(dir, dist, Operate_File_Change);
   });
@@ -96,7 +96,7 @@ function changeFile(dir) {
 
 
 module.exports = {
-  addFile,
-  changeFile,
-  removeFile,
+  addFileSync,
+  changeFileSync,
+  removeFileSync,
 };

@@ -3,12 +3,21 @@
  */
 const path = require('path')
 const chokidar = require('chokidar');
-const addImport = require('./utils/addImport');
-const { addFile, removeFile, changeFile } = require('./core/fileOperate');
+const {
+  setAutoImportOptions,
+  addFileImport,
+  addDirImport,
+  removeFileImport,
+  removeDirImport
+} = require('auto-import-module');
+const {
+  addFileSync,
+  removeFileSync,
+  changeFileSync
+} = require('./core/fileOperate');
 const { setModuleOptions } = require('./utils/moduleOptions');
 const CacheFilesKeyMap = require('./core/cacheFilesKeyMap');
 const getSyncDirs = require('./core/getSyncDirs');
-const directory = require("./utils/directory");
 
 module.exports = function (options = {}) {
   options = Object.assign({
@@ -18,10 +27,16 @@ module.exports = function (options = {}) {
   getSyncDirs(options.root, options.dirs).then(dirs => {
     Object.assign(options, {
       // 同步目录共同的根目录。可不配置，但root与dirs至少有一个有效配置
-      root: path.join(options.root, '/'),
+      root: options.root,
       // 保持并行同步的目录。可不配，但root与dirs至少有一个有效配置
       dirs,
       // 创建目录的默认入口index文件的后缀名
+      extension: options.defaultIndexExtension || '.js',
+      // 自动引用目录模块
+      autoImportModule: true,
+    });
+    setAutoImportOptions({
+      root: path.join(options.root, '/'),
       extension: options.defaultIndexExtension || '.js',
     });
     setModuleOptions(options);
@@ -34,35 +49,29 @@ module.exports = function (options = {}) {
 
     watcher
       .on('add', path => {
-        directory.add(path);
-        addFile(path);
-        addImport(path);
+        options.autoImportModule && addFileImport(path);
+        addFileSync(path);
       })
       .on('change', path => {
-        changeFile(path);
+        changeFileSync(path);
       })
       .on('unlink', path => {
-        directory.remove(path);
-        removeFile(path);
-        addImport(path);
+        options.autoImportModule && removeFileImport(path);
+        removeFileSync(path);
       })
       .on('addDir', path => {
-        directory.add(path);
-        addFile(path);
-        addImport(path);
+        options.autoImportModule && addDirImport(path);
+        addFileSync(path);
       })
       .on('unlinkDir', path => {
-        directory.remove(path);
-        removeFile(path);
-        addImport(path);
+        options.autoImportModule && removeDirImport(path);
+        removeFileSync(path);
       });
   });
 }
 
 Object.assign(module.exports, {
-  directory,
-  addFile,
-  addImport,
-  changeFile,
-  removeFile,
+  addFileSync,
+  changeFileSync,
+  removeFileSync
 })
