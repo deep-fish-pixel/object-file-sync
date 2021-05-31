@@ -51,7 +51,7 @@ function writeImportFile(parentDirIndex, files){
         importModule += `${importFlags[extension]} './${parentName}';\n`;
       } else {
         importModule += `import ${parentName} from './${parentName}';\n`;
-        ouputModule += `  ${parentName},\n`;
+        ouputModule += `  ...${parentName},\n`;
       }
     }
   });
