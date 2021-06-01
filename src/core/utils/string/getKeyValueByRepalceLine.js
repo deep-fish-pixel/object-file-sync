@@ -1,11 +1,16 @@
-
+/**
+ * 按行获取键值对
+ * @param value
+ * @param callback
+ * @returns {*}
+ */
 function getKeyValueByRepalceLine(value, callback) {
   let hasReplaced = false;
-  const first = value.replace(/^(\s*['"]?)([\w\-]+)(['"]?\s*:\s*['"])([\s\S]*)(['"])([^\n]*$)/g, wrap);
+  const first = value.replace(/^(\s*['"]?)([\w\-.]+)(['"]?\s*:\s*['"])([\s\S]*)(['"])([^\n]*$)/g, wrap);
   if (hasReplaced) {
     return first;
   } else {
-    return value.replace(/^(\s*['"]?)([\w\-]+)(['"]?\s*:\s*)(\w*)([^\n]*)($)/g, wrap);
+    return value.replace(/^(\s*['"]?)([\w\-.]+)(['"]?\s*:\s*)(\w*)([^\n]*)($)/g, wrap);
   }
 
   function wrap() {

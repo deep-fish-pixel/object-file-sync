@@ -1,3 +1,7 @@
+const path = require('path');
+/**
+ * 缓存配置，单例
+ */
 const _options = {
   dir: '',
   extension: '',
@@ -13,11 +17,8 @@ function setModuleOptions(options) {
 }
 
 function getRelativeDir(dir) {
-  if(typeof getModuleOptions !== 'function'){
-    debugger
-  }
   const { root } = getModuleOptions();
-  return dir.replace(root, '');
+  return dir.replace(path.join(root.replace(/\/[\w-]+\/?$/, ''), '/'), '');
 }
 
 module.exports = {

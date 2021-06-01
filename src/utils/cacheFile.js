@@ -6,6 +6,12 @@ const CacheFilesKeyMap = require('../core/cacheFilesKeyMap');
 const cacheFileMap = new Map();
 
 module.exports = {
+  /**
+   * 获取文件内容并缓存
+   * @param file
+   * @param noCache
+   * @returns {Promise<boolean|any>|Promise<T>}
+   */
   getFile(file, noCache) {
     const content = noCache ? false : cacheFileMap.get(file);
     if (content) {
@@ -22,6 +28,12 @@ module.exports = {
       });
     }
   },
+  /**
+   * 写入文件内容并缓存
+   * @param file
+   * @param content
+   * @returns {Promise<T>}
+   */
   writeFile(file, content) {
     return fse.writeFile(file, content).then(() => {
       // 缓存文件

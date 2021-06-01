@@ -21,6 +21,12 @@ module.exports = function (options = {}) {
     extension: options.defaultIndexExtension || '.js',
     // 自动引用目录模块
     autoImportModule: true,
+    // 修改配置key的回调
+    changeKeyHandle: null,
+    // 键映射配置
+    keyMap: null,
+    // 设置key文件位置的分割符，为空表示不分离
+    setKeyToFileSeperator: '.',
   }, options);
   setSyncOptions(options);
 

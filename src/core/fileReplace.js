@@ -3,8 +3,13 @@ const getKeyValueByRepalceLine = require("./utils/string/getKeyValueByRepalceLin
 const getDefaultValue = require("./utils/basicType/getDefaultValue");
 const { getFile, writeFile } = require("../utils/cacheFile");
 const { KeyMapRegExp, LineSeparateExpReg } = require("./constants/regExp");
+const { getModuleOptions } = require('../utils/moduleOptions');
 
-
+/**
+ * 对文件内容键值对替换
+ * @param target
+ * @param dist
+ */
 module.exports = function fileReplace(target, dist) {
   Promise.all([getFile(target), getFile(target, true), getFile(dist)])
     .then(([targetOldContent, targetContent, distContent]) => {
@@ -22,10 +27,22 @@ module.exports = function fileReplace(target, dist) {
       writeFile(dist, distValue);
       if (Object.keys(changeKeysObject).length) {
         writeFile(target, getAddedContent(diffList));
+        const { changeKeyHandle } = getModuleOptions();
+        if (changeKeyHandle) {
+          changeKeyHandle(changeKeysObject);
+        }
       }
+      // setKeyToFileSeperator
     });
 }
 
+/**
+ * 根据键值内容对其他需要同步文件进行替换
+ * @param diffList
+ * @param removedObject
+ * @param changeKeysObject
+ * @returns {string}
+ */
 function renderContent(diffList, removedObject, changeKeysObject){
   let content = '';
   diffList.forEach( diff => {
@@ -46,6 +63,11 @@ function renderContent(diffList, removedObject, changeKeysObject){
   return content;
 }
 
+/**
+ * 根据diff获取新增完整内容
+ * @param diffList
+ * @returns {string}
+ */
 function getAddedContent(diffList) {
   let content = '';
   diffList.forEach( (diff, index) => {
@@ -57,6 +79,11 @@ function getAddedContent(diffList) {
   return content;
 }
 
+/**
+ * 按行获取键值
+ * @param value
+ * @returns {{keyValue, key}}
+ */
 function getKeyValueByLine(value) {
   let key, keyValue;
   value.replace(KeyMapRegExp, (all, $1, $2) => {
@@ -69,6 +96,12 @@ function getKeyValueByLine(value) {
   };
 }
 
+/**
+ * 根据下一个diff，获取修改前后的旧值新值
+ * @param diff
+ * @param nextDiff
+ * @returns {{}|{changeKey, fromKey}}
+ */
 function getChangeKeysByNext(diff, nextDiff) {
   const { added, removed, value } = diff;
   if (nextDiff) {
@@ -85,6 +118,11 @@ function getChangeKeysByNext(diff, nextDiff) {
   return {};
 }
 
+/**
+ * 根据>符号 获取多个 修改前后的旧值新值
+ * @param diffList
+ * @returns {{removedObject: {}, changeKeysObject: {}}}
+ */
 function getKeyValueObjects(diffList) {
   const removedObject = {};
   const changeKeysObject = {};
@@ -103,13 +141,13 @@ function getKeyValueObjects(diffList) {
       const values = value.split(LineSeparateExpReg);
       values.forEach(value => {
         getKeyValueByRepalceLine(value, (all, $1, key, $3, value) => {
-          if (key.match(/[\w\-]+>/)) {
+          if (key.match(/[\w\-.]+>/)) {
             const [fromKey, changeKey] = key.split('>');
             changeKeysObject[changeKey] = fromKey;
           }
         });
       });
-      diff.value = value.replace(/(['"]?)([\w\-]+)>([\w\-]*)(['"]?\s*:\s*['"]?)/, (all, $1, fromKey, changeKey, $3) => {
+      diff.value = value.replace(/(['"]?)([\w\-.]+)>([\w\-]*)(['"]?\s*:\s*['"]?)/, (all, $1, fromKey, changeKey, $3) => {
         return `${$1}${changeKey}${$3}`
       });
     }
@@ -120,6 +158,11 @@ function getKeyValueObjects(diffList) {
   };
 }
 
+/**
+ * 根据修改前后，获取多个 新值旧值
+ * @param diffOldTargetList
+ * @returns {{}}
+ */
 function getChangeKeysObject(diffOldTargetList) {
   const changeKeysObject = {};
 
