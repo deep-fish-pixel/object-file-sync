@@ -4,7 +4,6 @@ const cache = new Map();
 
 function getKeyValueList(content) {
   const lines = content.split(LineSeparateExpReg);
-  console.log(lines)
   return lines;
 }
 

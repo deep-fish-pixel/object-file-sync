@@ -37,7 +37,6 @@ function cacheFilter(dirs, operate) {
       validDirs.push(dir);
     }
   })
-  console.log(validDirs)
   return validDirs;
 }
 

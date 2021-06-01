@@ -18,7 +18,6 @@ module.exports = {
         CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
         return content;
       }).catch((e) => {
-        console.log(e)
         error(`[读取文件失败]不存在该文件: ${getRelativeDir(file)}`)
       });
     }
@@ -31,7 +30,6 @@ module.exports = {
       CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
       return content;
     }).catch((e) => {
-      console.log(e)
       error(`[写入文件失败] ${getRelativeDir(file)} ${e.message}`)
     })
   },

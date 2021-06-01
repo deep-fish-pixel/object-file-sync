@@ -12,6 +12,25 @@ function CacheDirsKeyMap(dirs) {
 }
 
 /**
+ * 对目录进行实例化，分别做不同文件的keymap验证
+ * @param dir
+ */
+CacheDirsKeyMap.prototype.addDirMapCache = function (dir) {
+  const dirCache = this.getDirCache(dir);
+  if (!dirCache) {
+    this.cacheDirMap.set(dir, new CacheDirKeyMap(dir));
+  }
+}
+
+/**
+ * 移除对目录的缓存
+ * @param dir
+ */
+CacheDirsKeyMap.prototype.removeDirMapCache = function (dir) {
+  this.cacheDirMap.delete(dir);
+}
+
+/**
  * 缓存文件，内部根据dir分发到对应的cache缓存
  * @param file
  * @param content

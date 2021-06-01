@@ -10,7 +10,6 @@ module.exports = function fileReplace(target, dist) {
     .then(([targetOldContent, targetContent, distContent]) => {
       const diffList = Diff.diffLines(distContent, targetContent);
       const diffOldTargetList = Diff.diffLines(targetOldContent, targetContent);
-      console.log(diffList)
       const {
         removedObject,
         changeKeysObject
@@ -18,13 +17,10 @@ module.exports = function fileReplace(target, dist) {
 
       Object.assign(changeKeysObject, getChangeKeysObject(diffOldTargetList));
 
-      console.log('====1===', changeKeysObject)
       const distValue = renderContent(diffList, removedObject, changeKeysObject);
-      console.log(distValue)
 
       writeFile(dist, distValue);
       if (Object.keys(changeKeysObject).length) {
-        console.log(getAddedContent(diffList))
         writeFile(target, getAddedContent(diffList));
       }
     });
@@ -97,11 +93,9 @@ function getKeyValueObjects(diffList) {
     const { added, removed, value } = diff;
     if (removed) {
       const values = value.split(LineSeparateExpReg);
-      console.log(values, value, '123123123123')
 
       values.forEach(value => {
         getKeyValueByRepalceLine(value, (all, $1, key, $3, value) => {
-          console.log(all, key, value, '======');
           removedObject[key] = value;
         });
       });
@@ -109,7 +103,6 @@ function getKeyValueObjects(diffList) {
       const values = value.split(LineSeparateExpReg);
       values.forEach(value => {
         getKeyValueByRepalceLine(value, (all, $1, key, $3, value) => {
-          console.log(all, key, value, '======add=======');
           if (key.match(/[\w\-]+>/)) {
             const [fromKey, changeKey] = key.split('>');
             changeKeysObject[changeKey] = fromKey;
