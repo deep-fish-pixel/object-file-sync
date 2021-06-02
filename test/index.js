@@ -9,6 +9,9 @@ setTimeout(() =>{
     root: path.join(process.cwd(), 'test/src/locales'),
     // dirs: ['zh-CN', 'en-US'],
     defaultIndexExtension: '.js',
+    autoImportExportModuleTypes: {
+
+    },
     replaceDir: path.join(process.cwd(), 'test/src'),
     replaceTargetRegExp: /(\{\{\s*|="\s*)(\$t\(\s*['"])([\w-.]+)>([\w-.]+)('\s*\)\s*"|"\s*\)\s*}})/g,
     replacePropagationRegExpStr: '([\'"])${$3}([\'"])',

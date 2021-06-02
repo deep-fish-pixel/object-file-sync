@@ -36,10 +36,12 @@ module.exports = {
    * @returns {Promise<T>}
    */
   writeFile(file, content) {
-    const originalContent = fse.readFileSync(file, 'utf8');
-    // 解决重复写入导致编辑器重新加载
-    if (originalContent === content) {
-      return Promise.resolve(content);
+    if(fse.existsSync(file)){
+      const originalContent = fse.readFileSync(file, 'utf8');
+      // 解决重复写入导致编辑器重新加载
+      if (originalContent === content) {
+        return Promise.resolve(content);
+      }
     }
     // 先缓存内容
     cacheFileMap.set(file, content);
