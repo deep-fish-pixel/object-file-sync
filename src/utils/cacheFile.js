@@ -1,6 +1,6 @@
 const fse = require('fs-extra');
+const { error } = require('console-log-cmd');
 const { getRelativeDir } = require('./moduleOptions');
-const { error } = require('./log');
 const CacheFilesKeyMap = require('../core/cacheFilesKeyMap');
 
 const cacheFileMap = new Map();
@@ -36,12 +36,16 @@ module.exports = {
    * @returns {Promise<T>}
    */
   writeFile(file, content) {
-    // debugger
+    const originalContent = fse.readFileSync(file, 'utf8');
+    // 解决重复写入导致编辑器重新加载
+    if (originalContent === content) {
+      return Promise.resolve(content);
+    }
     // 先缓存内容
     cacheFileMap.set(file, content);
-    console.log('writeFile===============1', file, content);
     // 缓存文件的键值
     CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
+
     return Promise.resolve(fse.writeFileSync(file, content)).then(() => {
       return content;
     }).catch((e) => {

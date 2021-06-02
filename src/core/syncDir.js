@@ -1,8 +1,8 @@
 const path = require('path');
 const fse = require('fs-extra');
+const { success } = require('console-log-cmd');
 const { getModuleOptions, getRelativeDir } = require('../utils/moduleOptions');
 const cacheFilter = require('./cacheFilter');
-const { success } = require('../utils/log');
 const fileReplace = require('./fileReplace');
 const { getFile } = require('../utils/cacheFile');
 
@@ -25,7 +25,6 @@ function getSyncDirs(file, operate) {
   const { dirs } = getModuleOptions();
   const syncDirs = [];
   let relativeDir;
-  debugger
   dirs.forEach(dir => {
     if (file.indexOf(dir) === -1) {
       syncDirs.push(dir);
@@ -43,13 +42,15 @@ function getSyncDirs(file, operate) {
   // cacheFilter([file], operate);
   return cacheFilter(absoluteDirs, operate);
 }
-const startTime = Date.now();
 /**
  * 同步目录文件
  * @param target
  * @param dist
  */
-function syncDir(target, dist, operate) {
+function syncDir(target, dist, operate, isDir) {
+  if (!syncDir.startTime) {
+    syncDir.startTime = Date.now();
+  }
   fse.pathExists(dist)
     .then(exists => {
       if (operate === Operate_File_Add) {
@@ -65,8 +66,9 @@ function syncDir(target, dist, operate) {
         if(dist.match(isFile)){
           getFile(dist);
         }
-        if (Date.now() - startTime < 2000) {
-          // fileReplace(target, dist);
+        // 对文件类型进行内容检查
+        if (!isDir && Date.now() - syncDir.startTime < 2000) {
+          fileReplace(target, dist);
         }
       }
       else if (exists && operate === Operate_File_Delete) {

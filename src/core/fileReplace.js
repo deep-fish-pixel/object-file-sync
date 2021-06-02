@@ -1,4 +1,5 @@
 const Diff = require('diff');
+const { success, error } = require('console-log-cmd');
 const getKeyValueByRepalceLine = require('./utils/string/getKeyValueByRepalceLine');
 const getDefaultValue = require('./utils/basicType/getDefaultValue');
 const { getFile, writeFile } = require('../utils/cacheFile');
@@ -7,7 +8,6 @@ const { getModuleOptions } = require('../utils/moduleOptions');
 const checkAndRemoveKeyToFile = require('./removeKeyToFile/checkAndRemoveKeyToFile');
 const getKeyValueByLine = require('./utils/keyValue/getKeyValueByLine');
 const {getRelativeDir} = require('../utils/moduleOptions');
-const { success, error } = require('../utils/log');
 
 /**
  * 对文件内容键值对替换

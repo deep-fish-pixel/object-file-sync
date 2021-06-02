@@ -1,7 +1,7 @@
+const { error } = require('console-log-cmd');
 const CacheDirKeyMap = require('./CacheDirKeyMap');
 const {File_Key_Value_Validate} = require('../constants/logMessage');
 const {getRelativeDir} = require('../../utils/moduleOptions');
-const { error } = require('../../utils/log');
 
 function CacheDirsKeyMap(dirs) {
   this.cacheDirMap = new Map();

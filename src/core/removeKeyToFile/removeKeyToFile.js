@@ -1,9 +1,9 @@
 const fse = require('fs-extra');
 const path = require('path');
+const { success, error } = require('console-log-cmd');
 const CacheFilesKeyMap = require('../cacheFilesKeyMap');
 const {getModuleOptions, getRelativeDir} = require('../../utils/moduleOptions');
 const { getFile, writeFile } = require('../../utils/cacheFile');
-const { success, error } = require('../../utils/log');
 
 /**
  * 移动key到指定文件
@@ -15,7 +15,7 @@ const { success, error } = require('../../utils/log');
  */
 function removeKeyToFile(
   { relativeDir, rootSubDir, rootDirSubFile, file }, keyValuePathList) {
-  const { root, defaultIndexExtension } = getModuleOptions();
+  const { root, extension } = getModuleOptions();
   const projectConfig = {
     syncTabWidth: 2,
     syncQuotes: '\'',
@@ -23,7 +23,7 @@ function removeKeyToFile(
   const moduleExports = 'export default';
   keyValuePathList.forEach(keyValuePathes => {
     const { key, keyValue, pathes, } = keyValuePathes;
-    const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${defaultIndexExtension}`);
+    const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${extension}`);
     const exist = fse.existsSync(newFile);
     if (exist) {
       getFile(newFile).then((content) => {

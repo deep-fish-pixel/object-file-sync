@@ -18,7 +18,7 @@ module.exports = function (options = {}) {
     // 保持并行同步的目录。可不配置，根据root自动生成
     dirs: [],
     // 创建目录的默认入口index文件的后缀名
-    extension: options.defaultIndexExtension || '.js',
+    extension: options.extension || '.js',
     // 自动引用目录模块
     autoImportModule: true,
     // 修改配置key的回调

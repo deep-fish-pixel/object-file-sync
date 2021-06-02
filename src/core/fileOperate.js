@@ -36,7 +36,7 @@ function addDirSync(dir) {
     addFileImport(dir);
   }
   getSyncDirs(dir, Operate_File_Add).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Add);
+    syncDir(dir, dist, Operate_File_Add, true);
   });
 }
 
@@ -63,7 +63,7 @@ function removeDirSync(dir) {
     removeFileImport(dir);
   }
   getSyncDirs(dir, Operate_File_Delete).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Delete);
+    syncDir(dir, dist, Operate_File_Delete, true);
   });
 }
 
@@ -73,7 +73,6 @@ function removeDirSync(dir) {
  */
 function changeFileSync(dir) {
   getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
-    console.log('changeFileSync==========1', dist)
     syncDir(dir, dist, Operate_File_Change);
   });
 }

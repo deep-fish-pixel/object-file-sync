@@ -42,7 +42,6 @@ module.exports = function (target, content) {
     }
   }));
 
-  console.log('checkAndRemoveKeyToFile=============1', target, lines.join('\n'))
   return {
     content: lines.join('\n'),
     keys: keyValues.map(keyValue => keyValue.key).join(','),

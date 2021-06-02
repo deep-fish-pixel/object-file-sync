@@ -1,5 +1,5 @@
+const { warn, error } = require('console-log-cmd');
 const { LineSeparateExpReg } = require('../constants/regExp');
-const { warn, error } = require('../../utils/log');
 const { getRelativeDir } = require('../../utils/moduleOptions');
 const getKeyValueByRepalceLine = require('../utils/string/getKeyValueByRepalceLine');
 const isValidateValue = require('../utils/basicType/isValidateValue');

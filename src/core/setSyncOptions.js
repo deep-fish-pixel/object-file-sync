@@ -10,7 +10,7 @@ const CacheFilesKeyMap = require('./cacheFilesKeyMap');
 module.exports = function (options) {
   setAutoImportOptions({
     root: path.join(options.root, '/'),
-    extension: options.defaultIndexExtension || '.js',
+    extension: options.extension || '.js',
   });
   setModuleOptions(options);
   CacheFilesKeyMap.createSingletonKeyMap(options.dirs);
