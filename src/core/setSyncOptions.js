@@ -11,6 +11,8 @@ module.exports = function (options) {
   setAutoImportOptions({
     root: path.join(options.root, '/'),
     extension: options.extension || '.js',
+    exportModuleTypeDefault: options.autoImportExportModuleTypeDefault,
+    exportModuleTypes: options.autoImportExportModuleTypes,
   });
   setModuleOptions(options);
   CacheFilesKeyMap.createSingletonKeyMap(options.dirs);

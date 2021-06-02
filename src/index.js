@@ -10,6 +10,7 @@ const {
   removeDirSync,
 } = require('./core/fileOperate');
 const setSyncOptions = require('./core/setSyncOptions');
+const { exportModuleTypes, } = require('auto-import-module');
 
 module.exports = function (options = {}) {
   options = Object.assign({
@@ -21,6 +22,8 @@ module.exports = function (options = {}) {
     extension: options.extension || '.js',
     // 自动引用目录模块
     autoImportModule: true,
+    autoImportExportModuleTypeDefault: exportModuleTypes.SPREAD_MODULE,
+    autoImportExportModuleTypes: {},
     // 修改配置key的回调
     changeKeyHandle: null,
     // 键映射配置

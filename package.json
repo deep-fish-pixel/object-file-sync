@@ -1,6 +1,6 @@
 {
   "name": "object-file-sync",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "object file sync",
   "main": "src/index.js",
   "scripts": {
@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/maweimaweima/object-file-sync#readme",
   "dependencies": {
-    "auto-import-module": "^1.0.7",
+    "auto-import-module": "^1.0.8",
     "chokidar": "^3.5.1",
     "console-log-cmd": "^1.0.1",
     "diff": "^5.0.0",
