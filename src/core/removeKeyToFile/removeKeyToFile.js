@@ -15,7 +15,7 @@ const { success, error } = require('../../utils/log');
  */
 function removeKeyToFile(
   { relativeDir, rootSubDir, rootDirSubFile, file }, keyValuePathList) {
-  const { root, extension } = getModuleOptions();
+  const { root, defaultIndexExtension } = getModuleOptions();
   const projectConfig = {
     syncTabWidth: 2,
     syncQuotes: '\'',
@@ -23,7 +23,7 @@ function removeKeyToFile(
   const moduleExports = 'export default';
   keyValuePathList.forEach(keyValuePathes => {
     const { key, keyValue, pathes, } = keyValuePathes;
-    const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${extension}`);
+    const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${defaultIndexExtension}`);
     const exist = fse.existsSync(newFile);
     if (exist) {
       getFile(newFile).then((content) => {

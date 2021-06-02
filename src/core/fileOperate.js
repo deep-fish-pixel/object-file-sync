@@ -73,6 +73,7 @@ function removeDirSync(dir) {
  */
 function changeFileSync(dir) {
   getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
+    console.log('changeFileSync==========1', dist)
     syncDir(dir, dist, Operate_File_Change);
   });
 }

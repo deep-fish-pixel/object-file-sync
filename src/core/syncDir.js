@@ -25,10 +25,12 @@ function getSyncDirs(file, operate) {
   const { dirs } = getModuleOptions();
   const syncDirs = [];
   let relativeDir;
+  debugger
   dirs.forEach(dir => {
     if (file.indexOf(dir) === -1) {
       syncDirs.push(dir);
     } else {
+      syncDirs.push(dir);
       relativeDir = file.replace(dir, '');
     }
   });
@@ -38,10 +40,10 @@ function getSyncDirs(file, operate) {
   const absoluteDirs = syncDirs.map(dir => {
     return path.join(dir, relativeDir);
   });
-  cacheFilter([file], operate);
+  // cacheFilter([file], operate);
   return cacheFilter(absoluteDirs, operate);
 }
-
+const startTime = Date.now();
 /**
  * 同步目录文件
  * @param target
@@ -62,6 +64,9 @@ function syncDir(target, dist, operate) {
         }
         if(dist.match(isFile)){
           getFile(dist);
+        }
+        if (Date.now() - startTime < 2000) {
+          // fileReplace(target, dist);
         }
       }
       else if (exists && operate === Operate_File_Delete) {

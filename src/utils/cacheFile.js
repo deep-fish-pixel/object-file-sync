@@ -17,7 +17,7 @@ module.exports = {
     if (content) {
       return Promise.resolve(content);
     } else {
-      return fse.readFile(file, 'utf8').then((content) => {
+      return Promise.resolve(fse.readFileSync(file, 'utf8')).then((content) => {
         // 缓存文件
         cacheFileMap.set(file, content);
         // 缓存文件的键值
@@ -39,9 +39,10 @@ module.exports = {
     // debugger
     // 先缓存内容
     cacheFileMap.set(file, content);
+    console.log('writeFile===============1', file, content);
     // 缓存文件的键值
     CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
-    return fse.writeFile(file, content).then(() => {
+    return Promise.resolve(fse.writeFileSync(file, content)).then(() => {
       return content;
     }).catch((e) => {
       error(`[写入文件失败] ${getRelativeDir(file)} ${e.message}`);
