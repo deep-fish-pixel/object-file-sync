@@ -1,4 +1,4 @@
-const isNullOrUndefined = require("./isNullOrUndefined");
+const isNullOrUndefined = require('./isNullOrUndefined');
 
 function isValidateValue(value) {
   return !isNullOrUndefined(value);

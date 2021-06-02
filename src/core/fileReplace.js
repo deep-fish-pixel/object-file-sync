@@ -1,9 +1,13 @@
 const Diff = require('diff');
-const getKeyValueByRepalceLine = require("./utils/string/getKeyValueByRepalceLine");
-const getDefaultValue = require("./utils/basicType/getDefaultValue");
-const { getFile, writeFile } = require("../utils/cacheFile");
-const { KeyMapRegExp, LineSeparateExpReg } = require("./constants/regExp");
+const getKeyValueByRepalceLine = require('./utils/string/getKeyValueByRepalceLine');
+const getDefaultValue = require('./utils/basicType/getDefaultValue');
+const { getFile, writeFile } = require('../utils/cacheFile');
+const { LineSeparateExpReg } = require('./constants/regExp');
 const { getModuleOptions } = require('../utils/moduleOptions');
+const checkAndRemoveKeyToFile = require('./removeKeyToFile/checkAndRemoveKeyToFile');
+const getKeyValueByLine = require('./utils/keyValue/getKeyValueByLine');
+const {getRelativeDir} = require('../utils/moduleOptions');
+const { success, error } = require('../utils/log');
 
 /**
  * 对文件内容键值对替换
@@ -24,16 +28,35 @@ module.exports = function fileReplace(target, dist) {
 
       const distValue = renderContent(diffList, removedObject, changeKeysObject);
 
-      writeFile(dist, distValue);
+      writeFileAndRemoveKeyToFile(dist, distValue);
       if (Object.keys(changeKeysObject).length) {
-        writeFile(target, getAddedContent(diffList));
+        writeFileAndRemoveKeyToFile(target, getAddedContent(diffList));
         const { changeKeyHandle } = getModuleOptions();
+        // 修改key时触发回调
         if (changeKeyHandle) {
           changeKeyHandle(changeKeysObject);
         }
       }
       // setKeyToFileSeperator
     });
+}
+
+function writeFileAndRemoveKeyToFile(file, fileContent){
+  const { content, keys, removeKeyToFile } = checkAndRemoveKeyToFile(file, fileContent);
+  writeFile(file, content).then(result => {
+    if (result === false) {
+      if (keys) {
+        error(`[文件同步] 移除Key ${keys} 失败: ${getRelativeDir(file)}`);
+      }
+      error(`[文件同步] 修改失败: ${getRelativeDir(file)}`);
+    } else {
+      if (keys) {
+        success(`[文件同步] 移除Key ${keys} 成功: ${getRelativeDir(file)}`);
+      }
+      success(`[文件同步] 修改成功: ${getRelativeDir(file)}`);
+    }
+    removeKeyToFile();
+  });
 }
 
 /**
@@ -80,30 +103,13 @@ function getAddedContent(diffList) {
 }
 
 /**
- * 按行获取键值
- * @param value
- * @returns {{keyValue, key}}
- */
-function getKeyValueByLine(value) {
-  let key, keyValue;
-  value.replace(KeyMapRegExp, (all, $1, $2) => {
-    key = $1;
-    keyValue = $2;
-  });
-  return {
-    key,
-    keyValue,
-  };
-}
-
-/**
  * 根据下一个diff，获取修改前后的旧值新值
  * @param diff
  * @param nextDiff
  * @returns {{}|{changeKey, fromKey}}
  */
 function getChangeKeysByNext(diff, nextDiff) {
-  const { added, removed, value } = diff;
+  const { value } = diff;
   if (nextDiff) {
     const { added: nextAdded, removed: nextRemoved, value: nextValue } = nextDiff;
     const {key, keyValue} = getKeyValueByLine(value);

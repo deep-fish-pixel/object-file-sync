@@ -1,4 +1,4 @@
-const CacheFilesKeyMap = require("./CacheFileKeyValueMap");
+const CacheFilesKeyMap = require('./CacheFileKeyValueMap');
 
 function CacheDirKeyMap(dir) {
   this.cacheFileMap = new Map();
@@ -29,6 +29,11 @@ CacheDirKeyMap.prototype.hasKey = function (file) {
       return innerFile;
     }
   }
+}
+
+CacheDirKeyMap.prototype.hasKeyByFile = function (file, key) {
+  const fileMap =  this.cacheFileMap.get(file);
+  return fileMap && fileMap.hasKey(key)
 }
 
 CacheDirKeyMap.prototype.hasValue = function (value) {

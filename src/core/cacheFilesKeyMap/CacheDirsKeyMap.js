@@ -1,7 +1,7 @@
-const CacheDirKeyMap = require("./CacheDirKeyMap");
-const {File_Key_Value_Validate} = require("../constants/logMessage");
-const {getRelativeDir} = require("../../utils/moduleOptions");
-const { error } = require("../../utils/log");
+const CacheDirKeyMap = require('./CacheDirKeyMap');
+const {File_Key_Value_Validate} = require('../constants/logMessage');
+const {getRelativeDir} = require('../../utils/moduleOptions');
+const { error } = require('../../utils/log');
 
 function CacheDirsKeyMap(dirs) {
   this.cacheDirMap = new Map();
@@ -59,6 +59,15 @@ CacheDirsKeyMap.prototype.hasKey = function (dir, key) {
     return dirCache.hasKey(key);
   } else {
     error(File_Key_Value_Validate, getRelativeDir(dir));
+  }
+}
+
+CacheDirsKeyMap.prototype.hasKeyByFile = function (file, key) {
+  const dirCache = this.getDirCache(file);
+  if (dirCache) {
+    return dirCache.hasKeyByFile(file, key);
+  } else {
+    error(File_Key_Value_Validate, getRelativeDir(file));
   }
 }
 

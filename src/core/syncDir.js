@@ -1,10 +1,10 @@
 const path = require('path');
 const fse = require('fs-extra');
 const { getModuleOptions, getRelativeDir } = require('../utils/moduleOptions');
-const cacheFilter = require("./cacheFilter");
-const { success } = require("../utils/log");
+const cacheFilter = require('./cacheFilter');
+const { success } = require('../utils/log');
 const fileReplace = require('./fileReplace');
-const { getFile } = require("../utils/cacheFile");
+const { getFile } = require('../utils/cacheFile');
 
 const {
   Operate_File_Add,
@@ -55,9 +55,14 @@ function syncDir(target, dist, operate) {
           fse.copySync(target, dist);
           success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`);
         }
+        const isFile = /\.\w+$/;
         // 读取文件内容，以便做第一次修改的对比处理
-        getFile(target);
-        getFile(dist);
+        if(target.match(isFile)){
+          getFile(target);
+        }
+        if(dist.match(isFile)){
+          getFile(dist);
+        }
       }
       else if (exists && operate === Operate_File_Delete) {
         fse.removeSync(dist);
@@ -68,8 +73,8 @@ function syncDir(target, dist, operate) {
           fileReplace(target, dist);
         } else {
           fse.copy(target, dist);
+          success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`)
         }
-        success(`[文件同步] 修改成功: ${getRelativeDir(dist)}`)
       }
     });
 }

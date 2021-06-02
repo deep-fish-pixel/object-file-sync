@@ -1,6 +1,6 @@
 const fse = require('fs-extra');
-const { getRelativeDir } = require("./moduleOptions");
-const { error } = require("./log");
+const { getRelativeDir } = require('./moduleOptions');
+const { error } = require('./log');
 const CacheFilesKeyMap = require('../core/cacheFilesKeyMap');
 
 const cacheFileMap = new Map();
@@ -24,7 +24,8 @@ module.exports = {
         CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
         return content;
       }).catch((e) => {
-        error(`[读取文件失败]不存在该文件: ${getRelativeDir(file)}`)
+        error(`[读取文件失败]不存在该文件: ${getRelativeDir(file)}`);
+        return false;
       });
     }
   },
@@ -35,14 +36,16 @@ module.exports = {
    * @returns {Promise<T>}
    */
   writeFile(file, content) {
+    // debugger
+    // 先缓存内容
+    cacheFileMap.set(file, content);
+    // 缓存文件的键值
+    CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
     return fse.writeFile(file, content).then(() => {
-      // 缓存文件
-      cacheFileMap.set(file, content);
-      // 缓存文件的键值
-      CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
       return content;
     }).catch((e) => {
-      error(`[写入文件失败] ${getRelativeDir(file)} ${e.message}`)
+      error(`[写入文件失败] ${getRelativeDir(file)} ${e.message}`);
+      return false;
     })
   },
 };

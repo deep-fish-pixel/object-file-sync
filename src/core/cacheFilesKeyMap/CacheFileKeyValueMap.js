@@ -1,8 +1,8 @@
-const { LineSeparateExpReg } = require("../constants/regExp");
-const { error } = require("../../utils/log");
+const { LineSeparateExpReg } = require('../constants/regExp');
+const { warn, error } = require('../../utils/log');
 const { getRelativeDir } = require('../../utils/moduleOptions');
-const getKeyValueByRepalceLine = require("../utils/string/getKeyValueByRepalceLine");
-const isValidateValue = require("../utils/basicType/isValidateValue");
+const getKeyValueByRepalceLine = require('../utils/string/getKeyValueByRepalceLine');
+const isValidateValue = require('../utils/basicType/isValidateValue');
 
 function CacheFileKeyValueMap(file, content, cacheDirKeyMap) {
   this.cacheKeyMap = new Map();
@@ -27,13 +27,13 @@ CacheFileKeyValueMap.prototype.addContent = function (content) {
     if (isValidateValue(key) && isValidateValue(value)) {
       let otherFile;
       if (this.cacheKeyMap.has(key)) {
-        error(`[文件验证] ${relativeDir}文件有相同key值:  ${key}`);
+        error(`[文件验证] ${relativeDir}文件有相同key:  ${key}`);
       } else if (this.cacheDirKeyMap && (otherFile = this.cacheDirKeyMap.hasKey(key))) {
-        error(`[文件验证] ${relativeDir}与${getRelativeDir(otherFile)}文件有相同key值: ${key}`);
+        error(`[文件验证] ${relativeDir}与${getRelativeDir(otherFile)}文件有相同key: ${key}`);
       } else if (this.cacheValueMap.has(value)) {
-        error(`[文件验证] ${relativeDir}文件有相同value值:  ${value}`);
+        warn(`[文件验证] ${relativeDir}文件有相同value值:  ${value}`);
       } else if (this.cacheDirKeyMap && (otherFile = this.cacheDirKeyMap.hasValue(value))) {
-        error(`[文件验证] ${relativeDir}与${getRelativeDir(otherFile)}文件有相同value值: ${value}`);
+        warn(`[文件验证] ${relativeDir}与${getRelativeDir(otherFile)}文件有相同value值: ${value}`);
       }
       this.cacheKeyMap.set(key, value);
       this.cacheValueMap.set(value, key);
