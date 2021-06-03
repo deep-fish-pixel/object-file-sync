@@ -17,11 +17,12 @@ module.exports = {
     if (content) {
       return Promise.resolve(content);
     } else {
-      return Promise.resolve(fse.readFileSync(file, 'utf8')).then((content) => {
-        // 缓存文件
-        cacheFileMap.set(file, content);
-        // 缓存文件的键值
-        CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
+      const content = fse.readFileSync(file, 'utf8');
+      // 缓存文件
+      cacheFileMap.set(file, content);
+      // 缓存文件的键值
+      CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
+      return Promise.resolve(content).then((content) => {
         return content;
       }).catch((e) => {
         error(`[读取文件失败]不存在该文件: ${getRelativeDir(file)}`);
@@ -47,10 +48,9 @@ module.exports = {
     cacheFileMap.set(file, content);
     // 缓存文件的键值
     CacheFilesKeyMap.getSingletonCacheKeyMap().addFileCache(file, content);
+    fse.writeFileSync(file, content)
 
-    return Promise.resolve(fse.writeFileSync(file, content)).then(() => {
-      return content;
-    }).catch((e) => {
+    return Promise.resolve(content).catch((e) => {
       error(`[写入文件失败] ${getRelativeDir(file)} ${e.message}`);
       return false;
     })
