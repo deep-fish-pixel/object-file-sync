@@ -10,17 +10,17 @@ const { readFile, writeFile } = require('../../utils/cacheFile');
  * @param relativeDir
  * @param rootSubDir
  * @param rootDirSubFile
- * @param file
  * @param keyValuePathList
  */
 function removeKeyToFile(
-  { relativeDir, rootSubDir, rootDirSubFile, file }, keyValuePathList) {
+  { relativeDir, rootSubDir, rootDirSubFile, }, keyValuePathList) {
   const { root, extension } = getModuleOptions();
   const projectConfig = {
     syncTabWidth: 2,
     syncQuotes: '\'',
   };
   const moduleExports = 'export default';
+  debugger
   keyValuePathList.forEach(keyValuePathes => {
     const { key, keyValue, pathes, } = keyValuePathes;
     const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${extension}`);
@@ -39,7 +39,7 @@ function removeKeyToFile(
           result = result + ` {\n${createKeyValue(key, keyValue, projectConfig)}};`;
         }
 
-        // 文件不包含该值才添加
+        // 判断文件不包含该值后 添加
         if(!CacheFilesKeyMap.getSingletonCacheKeyMap().hasKeyByFile(newFile, key)){
           writeFile(newFile, result).then(result => {
             if (result === false) {

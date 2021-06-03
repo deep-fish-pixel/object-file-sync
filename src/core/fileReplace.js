@@ -26,7 +26,8 @@ module.exports = function fileReplace(target, dist) {
 
       Object.assign(changeKeysObject, getChangeKeysObject(diffOldTargetList));
 
-      const distValue = renderContent(diffList, removedObject, changeKeysObject);
+      // 自己本身则取原内容
+      const distValue = target === dist ? targetContent: renderContent(diffList, removedObject, changeKeysObject);
 
       writeFileAndRemoveKeyToFile(dist, distValue);
       if (Object.keys(changeKeysObject).length) {
@@ -37,7 +38,6 @@ module.exports = function fileReplace(target, dist) {
           changeKeyHandle(changeKeysObject);
         }
       }
-      // setKeyToFileSeperator
     });
 }
 
@@ -53,7 +53,7 @@ function writeFileAndRemoveKeyToFile(file, fileContent){
       if (keys) {
         success(`[文件同步] 移除Key ${keys} 成功: ${getRelativeDir(file)}`);
       }
-      success(`[文件同步] 修改成功: ${getRelativeDir(file)} ${content}`);
+      success(`[文件同步] 修改成功: ${getRelativeDir(file)}`);
     }
     removeKeyToFile();
   });

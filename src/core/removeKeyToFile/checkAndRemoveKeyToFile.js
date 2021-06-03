@@ -37,6 +37,7 @@ module.exports = function (target, content) {
         key,
         keyValue,
         pathes,
+        line,
       });
       return false;
     }
@@ -48,7 +49,7 @@ module.exports = function (target, content) {
     removeKeyToFile: () => {
       // 一起移到文件中
       if (keyValues.length) {
-        removeKeyToFile({ root, relativeDir, rootSubDir, rootDirSubFile } , keyValues);
+        removeKeyToFile({ relativeDir, rootSubDir, rootDirSubFile } , keyValues);
       }
     }
   };
