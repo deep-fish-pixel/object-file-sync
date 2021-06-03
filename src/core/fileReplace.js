@@ -26,7 +26,8 @@ module.exports = function fileReplace(target, dist, targetContentsPromises) {
 
       Object.assign(changeKeysObject, getChangeKeysObject(diffOldTargetList));
 
-      const distValue = renderContent(diffList, removedObject, changeKeysObject);
+      // 自己本身则取原内容
+      const distValue = target === dist ? targetContent: renderContent(diffList, removedObject, changeKeysObject);
 
       //对键值进行替换
       writeFileAndRemoveKeyToFile(dist, distValue);
