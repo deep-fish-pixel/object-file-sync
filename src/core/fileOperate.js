@@ -1,7 +1,7 @@
 const { getModuleOptions } = require('../utils/moduleOptions');
 const setSyncDirs = require('../core/setSyncDirs');
 const {syncDir, getSyncDirs} = require('./syncDir');
-const getFileContents = require('./getFileContents');
+const { getFileContents, getFilesContents } = require('./getFileContents');
 const {
   addFileImport,
   addDirImport,
@@ -25,8 +25,9 @@ function addFileSync(file) {
   }
   // 先获取文件的新旧内容
   const fileContents = getFileContents(file);
-  getSyncDirs(file, Operate_File_Add).forEach((dist) => {
-    syncDir(file, dist, Operate_File_Add, false, fileContents);
+  const dists = getSyncDirs(file, Operate_File_Add);
+  getFilesContents(dists).forEach((distContent, index) => {
+    syncDir(file, dists[index], Operate_File_Add, false, fileContents, distContent);
   });
 }
 
@@ -79,8 +80,9 @@ function removeDirSync(dir) {
 function changeFileSync(file) {
   // 先获取文件的新旧内容
   const fileContents = getFileContents(file);
-  getSyncDirs(file, Operate_File_Change).forEach((dist) => {
-    syncDir(file, dist, Operate_File_Change, false, fileContents);
+  const dists = getSyncDirs(file, Operate_File_Change);
+  getFilesContents(dists).forEach((distContent, index) => {
+    syncDir(file, dists[index], Operate_File_Change, false, fileContents, distContent);
   });
 }
 

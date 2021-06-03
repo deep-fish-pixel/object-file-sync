@@ -44,7 +44,7 @@ function getSyncDirs(file, operate) {
  * @param target
  * @param dist
  */
-function syncDir(target, dist, operate, isDir, targetContentsPromises) {
+function syncDir(target, dist, operate, isDir, targetContentsPromises, distContentPromise) {
   if (!syncDir.startTime) {
     syncDir.startTime = Date.now();
   }
@@ -66,7 +66,7 @@ function syncDir(target, dist, operate, isDir, targetContentsPromises) {
         // 对文件类型进行内容检查
         if (Date.now() - syncDir.startTime < 3000) {
           if (!isDir) {
-            fileReplace(target, dist, targetContentsPromises);
+            fileReplace(target, dist, targetContentsPromises, distContentPromise);
           }
           if (getModuleOptions().autoImportModule) {
             if (isDir) {
@@ -83,7 +83,7 @@ function syncDir(target, dist, operate, isDir, targetContentsPromises) {
         warn(`[文件同步] 删除成功: ${getRelativeDir(dist)}`)
       } else if (operate === Operate_File_Change) {
         if (exists) {
-          fileReplace(target, dist, targetContentsPromises);
+          fileReplace(target, dist, targetContentsPromises, distContentPromise);
         } else {
           fse.copy(target, dist);
           success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`)

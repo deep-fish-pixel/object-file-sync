@@ -14,8 +14,8 @@ const {getRelativeDir} = require('../utils/moduleOptions');
  * @param target
  * @param dist
  */
-module.exports = function fileReplace(target, dist, targetContentsPromises) {
-  Promise.all([...targetContentsPromises, readFile(dist)])
+module.exports = function fileReplace(target, dist, targetContentsPromises, distContentPromise) {
+  Promise.all([...targetContentsPromises, distContentPromise])
     .then(([targetOldContent, targetContent, distContent]) => {
       const diffList = Diff.diffLines(distContent, targetContent);
       const diffOldTargetList = Diff.diffLines(targetOldContent, targetContent);
