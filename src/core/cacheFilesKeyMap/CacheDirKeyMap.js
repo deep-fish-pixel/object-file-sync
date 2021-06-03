@@ -11,6 +11,11 @@ function CacheDirKeyMap(dir) {
  * @param content
  */
 CacheDirKeyMap.prototype.addFileCache = function (file, content) {
+  const filesKeyMap = this.cacheFileMap.get(file);
+  // 如果内容相同，则不再加入
+  if (filesKeyMap && filesKeyMap.content === content) {
+    return;
+  }
   this.cacheFileMap.delete(file);
   this.cacheFileMap.set(file, new CacheFilesKeyMap(file, content, this))
 }

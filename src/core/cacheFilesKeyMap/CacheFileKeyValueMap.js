@@ -29,6 +29,7 @@ CacheFileKeyValueMap.prototype.addContent = function (content) {
       if (this.cacheKeyMap.has(key)) {
         error(`[文件验证] ${relativeDir}文件有相同key:  ${key}`);
       } else if (this.cacheDirKeyMap && (otherFile = this.cacheDirKeyMap.hasKey(key))) {
+        debugger
         error(`[文件验证] ${relativeDir}与${getRelativeDir(otherFile)}文件有相同key: ${key}`);
       } else if (this.cacheValueMap.has(value)) {
         warn(`[文件验证] ${relativeDir}文件有相同value值:  ${value}`);
@@ -51,6 +52,10 @@ CacheFileKeyValueMap.prototype.hasKey = function (key) {
 
 CacheFileKeyValueMap.prototype.hasValue = function (value) {
   return this.cacheValueMap.has(value)
+}
+
+CacheFileKeyValueMap.prototype.getContent = function () {
+  return this.cacheValueMap.content;
 }
 
 module.exports = CacheFileKeyValueMap;

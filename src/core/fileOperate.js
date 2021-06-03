@@ -1,6 +1,7 @@
 const { getModuleOptions } = require('../utils/moduleOptions');
 const setSyncDirs = require('../core/setSyncDirs');
 const {syncDir, getSyncDirs} = require('./syncDir');
+const getFileContents = require('./getFileContents');
 const {
   addFileImport,
   addDirImport,
@@ -23,7 +24,7 @@ function addFileSync(file) {
     addFileImport(file);
   }
   getSyncDirs(file, Operate_File_Add).forEach((dist) => {
-    syncDir(file, dist, Operate_File_Add);
+    syncDir(file, dist, Operate_File_Add, false, getFileContents(file));
   });
 }
 
@@ -51,7 +52,7 @@ function removeFileSync(file) {
     removeFileImport(file);
   }
   getSyncDirs(file, Operate_File_Delete).forEach((dist) => {
-    syncDir(file, dist, Operate_File_Delete);
+    syncDir(file, dist, Operate_File_Delete, false);
   });
 }
 
@@ -75,7 +76,7 @@ function removeDirSync(dir) {
  */
 function changeFileSync(dir) {
   getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Change);
+    syncDir(dir, dist, Operate_File_Change, false, getFileContents(dir));
   });
 }
 

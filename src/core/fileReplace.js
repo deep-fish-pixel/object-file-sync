@@ -14,8 +14,8 @@ const {getRelativeDir} = require('../utils/moduleOptions');
  * @param target
  * @param dist
  */
-module.exports = function fileReplace(target, dist) {
-  Promise.all([readFile(target), readFile(target, true), readFile(dist)])
+module.exports = function fileReplace(target, dist, targetContentsPromises) {
+  Promise.all([...targetContentsPromises, readFile(dist)])
     .then(([targetOldContent, targetContent, distContent]) => {
       const diffList = Diff.diffLines(distContent, targetContent);
       const diffOldTargetList = Diff.diffLines(targetOldContent, targetContent);
@@ -26,11 +26,12 @@ module.exports = function fileReplace(target, dist) {
 
       Object.assign(changeKeysObject, getChangeKeysObject(diffOldTargetList));
 
-      // 自己本身则取原内容
-      const distValue = target === dist ? targetContent: renderContent(diffList, removedObject, changeKeysObject);
+      const distValue = renderContent(diffList, removedObject, changeKeysObject);
 
+      //对键值进行替换
       writeFileAndRemoveKeyToFile(dist, distValue);
       if (Object.keys(changeKeysObject).length) {
+        //对键值进行替换
         writeFileAndRemoveKeyToFile(target, getAddedContent(diffList));
         const { changeKeyHandle } = getModuleOptions();
         // 修改key时触发回调

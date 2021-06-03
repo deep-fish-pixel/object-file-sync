@@ -20,7 +20,6 @@ function removeKeyToFile(
     syncQuotes: '\'',
   };
   const moduleExports = 'export default';
-  debugger
   keyValuePathList.forEach(keyValuePathes => {
     const { key, keyValue, pathes, } = keyValuePathes;
     const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${extension}`);
@@ -60,6 +59,16 @@ function removeKeyToFile(
           success(`[文件同步] 添加Key ${key} 成功: ${getRelativeDir(newFile)}`);
         }
       });
+      /*// ensureDir需要异步，否则导致多级目录同时创建时监控失效
+      fse.ensureDir(newFile.replace(/\/[^\/]+$/, '')).then((err) => {
+        writeFile(newFile, `${moduleExports} {\n${createKeyValue(key, keyValue, projectConfig)}};`).then(result => {
+          if (result === false) {
+            error(`[文件同步] 添加Key ${key} 失败: ${getRelativeDir(newFile)}`);
+          } else {
+            success(`[文件同步] 添加Key ${key} 成功: ${getRelativeDir(newFile)}`);
+          }
+        });
+      })*/
     }
   });
 }

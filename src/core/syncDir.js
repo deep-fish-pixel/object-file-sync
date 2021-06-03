@@ -1,18 +1,16 @@
 const path = require('path');
 const fse = require('fs-extra');
 const { success, warn } = require('console-log-cmd');
+const { addFileImport, addDirImport } = require('auto-import-module');
 const { getModuleOptions, getRelativeDir } = require('../utils/moduleOptions');
 const cacheFilter = require('./cacheFilter');
 const fileReplace = require('./fileReplace');
 const { readFile } = require('../utils/cacheFile');
-
 const {
   Operate_File_Add,
   Operate_File_Change,
   Operate_File_Delete
 }  = require('./constants/fileOperate');
-
-
 const CacheFilesKeyMap = require('./cacheFilesKeyMap');
 
 /**
@@ -39,7 +37,6 @@ function getSyncDirs(file, operate) {
   const absoluteDirs = syncDirs.map(dir => {
     return path.join(dir, relativeDir);
   });
-  // cacheFilter([file], operate);
   return cacheFilter(absoluteDirs, operate);
 }
 /**
@@ -47,7 +44,7 @@ function getSyncDirs(file, operate) {
  * @param target
  * @param dist
  */
-function syncDir(target, dist, operate, isDir) {
+function syncDir(target, dist, operate, isDir, targetContentsPromises) {
   if (!syncDir.startTime) {
     syncDir.startTime = Date.now();
   }
@@ -67,8 +64,17 @@ function syncDir(target, dist, operate, isDir) {
           readFile(dist);
         }
         // 对文件类型进行内容检查
-        if (!isDir && Date.now() - syncDir.startTime < 2000) {
-          fileReplace(target, dist);
+        if (Date.now() - syncDir.startTime < 3000) {
+          if (!isDir) {
+            fileReplace(target, dist, targetContentsPromises);
+          }
+          if (getModuleOptions().autoImportModule) {
+            if (isDir) {
+              addDirImport(dist);
+            } else {
+              addFileImport(dist);
+            }
+          }
         }
       }
       else if (exists && operate === Operate_File_Delete) {
@@ -77,7 +83,7 @@ function syncDir(target, dist, operate, isDir) {
         warn(`[文件同步] 删除成功: ${getRelativeDir(dist)}`)
       } else if (operate === Operate_File_Change) {
         if (exists) {
-          fileReplace(target, dist);
+          fileReplace(target, dist, targetContentsPromises);
         } else {
           fse.copy(target, dist);
           success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`)
