@@ -1,3 +1,4 @@
+const path = require('path');
 const { error } = require('console-log-cmd');
 const CacheDirKeyMap = require('./CacheDirKeyMap');
 const {File_Key_Value_Validate} = require('../constants/logMessage');
@@ -40,7 +41,9 @@ CacheDirsKeyMap.prototype.addFileCache = function (file, content) {
   if (dirCache) {
     dirCache.addFileCache(file, content);
   } else {
-    error(File_Key_Value_Validate, getRelativeDir(file));
+    if (this.isSubDir(file)) {
+      error(File_Key_Value_Validate, getRelativeDir(file));
+    }
   }
 }
 
@@ -49,7 +52,9 @@ CacheDirsKeyMap.prototype.getValue = function (dir, key) {
   if (dirCache) {
     return dirCache.getValue(key);
   } else {
-    error(File_Key_Value_Validate, getRelativeDir(dir));
+    if (this.isSubDir(file)) {
+      error(File_Key_Value_Validate, getRelativeDir(dir));
+    }
   }
 }
 
@@ -58,7 +63,9 @@ CacheDirsKeyMap.prototype.hasKey = function (dir, key) {
   if (dirCache) {
     return dirCache.hasKey(key);
   } else {
-    error(File_Key_Value_Validate, getRelativeDir(dir));
+    if (this.isSubDir(file)) {
+      error(File_Key_Value_Validate, getRelativeDir(dir));
+    }
   }
 }
 
@@ -67,7 +74,9 @@ CacheDirsKeyMap.prototype.hasKeyByFile = function (file, key) {
   if (dirCache) {
     return dirCache.hasKeyByFile(file, key);
   } else {
-    error(File_Key_Value_Validate, getRelativeDir(file));
+    if (this.isSubDir(file)) {
+      error(File_Key_Value_Validate, getRelativeDir(file));
+    }
   }
 }
 
@@ -76,7 +85,9 @@ CacheDirsKeyMap.prototype.clearFileCache = function (file) {
   if (dirCache) {
     return dirCache.clearFileCache(file);
   } else {
-    error(File_Key_Value_Validate, getRelativeDir(dir));
+    if (this.isSubDir(file)) {
+      error(File_Key_Value_Validate, getRelativeDir(dir));
+    }
   }
 }
 
@@ -90,6 +101,13 @@ CacheDirsKeyMap.prototype.getDirCache = function (file) {
 
 CacheDirsKeyMap.prototype.addDir = function (file) {
 
+}
+/**
+ * 是否为子目录
+ * @param file
+ */
+CacheDirsKeyMap.prototype.isSubDir = function (file) {
+  return this.dirs.some(dir => file.indexOf(path.join(dir, '/')) >= 0);
 }
 
 module.exports = CacheDirsKeyMap;

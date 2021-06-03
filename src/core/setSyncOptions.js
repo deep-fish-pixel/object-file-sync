@@ -1,5 +1,5 @@
 const path = require('path');
-const { setAutoImportOptions, } = require('auto-import-module');
+const { setAutoImportOptions, exportModuleTypes, } = require('auto-import-module');
 const { setModuleOptions } = require('../utils/moduleOptions');
 const CacheFilesKeyMap = require('./cacheFilesKeyMap');
 
@@ -11,7 +11,7 @@ module.exports = function (options) {
   setAutoImportOptions({
     root: path.join(options.root, '/'),
     extension: options.extension || '.js',
-    exportModuleTypeDefault: options.autoImportExportModuleTypeDefault,
+    exportModuleTypeDefault: options.autoImportExportModuleTypeDefault || exportModuleTypes.SPREAD_MODULE,
     exportModuleTypes: options.autoImportExportModuleTypes,
   });
   setModuleOptions(options);

@@ -23,8 +23,10 @@ function addFileSync(file) {
   if (getModuleOptions().autoImportModule) {
     addFileImport(file);
   }
+  // 先获取文件的新旧内容
+  const fileContents = getFileContents(file);
   getSyncDirs(file, Operate_File_Add).forEach((dist) => {
-    syncDir(file, dist, Operate_File_Add, false, getFileContents(file));
+    syncDir(file, dist, Operate_File_Add, false, fileContents);
   });
 }
 
@@ -74,9 +76,11 @@ function removeDirSync(dir) {
  * 修改文件
  * @param dir
  */
-function changeFileSync(dir) {
-  getSyncDirs(dir, Operate_File_Change).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Change, false, getFileContents(dir));
+function changeFileSync(file) {
+  // 先获取文件的新旧内容
+  const fileContents = getFileContents(file);
+  getSyncDirs(file, Operate_File_Change).forEach((dist) => {
+    syncDir(file, dist, Operate_File_Change, false, fileContents);
   });
 }
 
