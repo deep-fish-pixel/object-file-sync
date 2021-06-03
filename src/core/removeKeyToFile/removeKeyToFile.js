@@ -3,7 +3,7 @@ const path = require('path');
 const { success, error } = require('console-log-cmd');
 const CacheFilesKeyMap = require('../cacheFilesKeyMap');
 const {getModuleOptions, getRelativeDir} = require('../../utils/moduleOptions');
-const { getFile, writeFile } = require('../../utils/cacheFile');
+const { readFile, writeFile } = require('../../utils/cacheFile');
 
 /**
  * 移动key到指定文件
@@ -26,7 +26,7 @@ function removeKeyToFile(
     const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${extension}`);
     const exist = fse.existsSync(newFile);
     if (exist) {
-      getFile(newFile).then((content) => {
+      readFile(newFile).then((content) => {
         let hasCurlyBrace = false;
         let result = content.replace(/([{,]?)(\s*)(}.*\s*)$/, (all, $1, $2, $3) => {
           hasCurlyBrace = true;

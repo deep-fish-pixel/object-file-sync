@@ -1,8 +1,8 @@
 const Diff = require('diff');
 const { success, error } = require('console-log-cmd');
+const { readFile, writeFile } = require('../utils/cacheFile');
 const getKeyValueByRepalceLine = require('./utils/string/getKeyValueByRepalceLine');
 const getDefaultValue = require('./utils/basicType/getDefaultValue');
-const { getFile, writeFile } = require('../utils/cacheFile');
 const { LineSeparateExpReg } = require('./constants/regExp');
 const { getModuleOptions } = require('../utils/moduleOptions');
 const checkAndRemoveKeyToFile = require('./removeKeyToFile/checkAndRemoveKeyToFile');
@@ -15,7 +15,7 @@ const {getRelativeDir} = require('../utils/moduleOptions');
  * @param dist
  */
 module.exports = function fileReplace(target, dist) {
-  Promise.all([getFile(target), getFile(target, true), getFile(dist)])
+  Promise.all([readFile(target), readFile(target, true), readFile(dist)])
     .then(([targetOldContent, targetContent, distContent]) => {
       const diffList = Diff.diffLines(distContent, targetContent);
       const diffOldTargetList = Diff.diffLines(targetOldContent, targetContent);
@@ -53,7 +53,7 @@ function writeFileAndRemoveKeyToFile(file, fileContent){
       if (keys) {
         success(`[文件同步] 移除Key ${keys} 成功: ${getRelativeDir(file)}`);
       }
-      success(`[文件同步] 修改成功: ${getRelativeDir(file)}`);
+      success(`[文件同步] 修改成功: ${getRelativeDir(file)} ${content}`);
     }
     removeKeyToFile();
   });

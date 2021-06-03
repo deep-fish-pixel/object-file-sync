@@ -3,7 +3,9 @@ const setSyncDirs = require('../core/setSyncDirs');
 const {syncDir, getSyncDirs} = require('./syncDir');
 const {
   addFileImport,
+  addDirImport,
   removeFileImport,
+  removeDirImport,
 } = require('auto-import-module');
 
 const {
@@ -27,13 +29,13 @@ function addFileSync(file) {
 
 
 /**
- * 添加文件目录
+ * 添加目录
  * @param dir
  */
 function addDirSync(dir) {
   setSyncDirs(dir, false);
   if (getModuleOptions().autoImportModule) {
-    addFileImport(dir);
+    addDirImport(dir);
   }
   getSyncDirs(dir, Operate_File_Add).forEach((dist) => {
     syncDir(dir, dist, Operate_File_Add, true);
@@ -54,13 +56,13 @@ function removeFileSync(file) {
 }
 
 /**
- * 删除文件目录
+ * 删除目录
  * @param dir
  */
 function removeDirSync(dir) {
   setSyncDirs(dir, true);
   if (getModuleOptions().autoImportModule) {
-    removeFileImport(dir);
+    removeDirImport(dir);
   }
   getSyncDirs(dir, Operate_File_Delete).forEach((dist) => {
     syncDir(dir, dist, Operate_File_Delete, true);

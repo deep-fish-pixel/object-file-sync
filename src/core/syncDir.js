@@ -1,10 +1,10 @@
 const path = require('path');
 const fse = require('fs-extra');
-const { success } = require('console-log-cmd');
+const { success, warn } = require('console-log-cmd');
 const { getModuleOptions, getRelativeDir } = require('../utils/moduleOptions');
 const cacheFilter = require('./cacheFilter');
 const fileReplace = require('./fileReplace');
-const { getFile } = require('../utils/cacheFile');
+const { readFile } = require('../utils/cacheFile');
 
 const {
   Operate_File_Add,
@@ -61,10 +61,10 @@ function syncDir(target, dist, operate, isDir) {
         const isFile = /\.\w+$/;
         // 读取文件内容，以便做第一次修改的对比处理
         if(target.match(isFile)){
-          getFile(target);
+          readFile(target);
         }
         if(dist.match(isFile)){
-          getFile(dist);
+          readFile(dist);
         }
         // 对文件类型进行内容检查
         if (!isDir && Date.now() - syncDir.startTime < 2000) {
@@ -74,7 +74,7 @@ function syncDir(target, dist, operate, isDir) {
       else if (exists && operate === Operate_File_Delete) {
         fse.removeSync(dist);
         CacheFilesKeyMap.getSingletonCacheKeyMap().clearFileCache(dist);
-        success(`[文件同步] 删除成功: ${getRelativeDir(dist)}`)
+        warn(`[文件同步] 删除成功: ${getRelativeDir(dist)}`)
       } else if (operate === Operate_File_Change) {
         if (exists) {
           fileReplace(target, dist);
