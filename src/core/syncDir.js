@@ -45,9 +45,6 @@ function getSyncDirs(file, operate) {
  * @param dist
  */
 function syncDir(target, dist, operate, isDir, targetContentsPromises, distContentPromise) {
-  if (!syncDir.startTime) {
-    syncDir.startTime = Date.now();
-  }
   const exists = fse.pathExistsSync(dist)
   if (operate === Operate_File_Add) {
     if (!exists) {
@@ -63,16 +60,14 @@ function syncDir(target, dist, operate, isDir, targetContentsPromises, distConte
       readFile(dist);
     }
     // 对文件类型进行内容检查
-    if (Date.now() - syncDir.startTime < 3000) {
-      if (!isDir) {
-        fileReplace(target, dist, targetContentsPromises, distContentPromise);
-      }
-      if (getModuleOptions().autoImportModule) {
-        if (isDir) {
-          addDirImport(dist);
-        } else {
-          addFileImport(dist);
-        }
+    if (!isDir) {
+      fileReplace(target, dist, targetContentsPromises, distContentPromise);
+    }
+    if (getModuleOptions().autoImportModule) {
+      if (isDir) {
+        addDirImport(dist);
+      } else {
+        addFileImport(dist);
       }
     }
   }
