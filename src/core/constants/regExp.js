@@ -3,7 +3,6 @@ const KeyMapSingleExpReg = /^\s*['"]?([\w\-.]+)['"]?\s*:\s*['"]([\s\S]*)['"]([,]
 const KeyMapSingleNumBooleanExpReg = /^\s*['"]?([\w\-.]+)['"]?\s*:\s*([\s\S]*)([,]\s*|\s*$)/;
 // 对json按行分割
 const LineSeparateExpReg = /\n/;
-
 module.exports = {
   KeyMapSingleExpReg,
   KeyMapSingleNumBooleanExpReg,

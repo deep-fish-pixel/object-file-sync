@@ -1,7 +1,7 @@
 const { getModuleOptions } = require('../utils/moduleOptions');
 const setSyncDirs = require('../core/setSyncDirs');
 const {syncDir, getSyncDirs} = require('./syncDir');
-const { getFileContents, getFilesContents } = require('./getFileContents');
+const { getFileContents, getFilesContents } = require('./utils/file/getFileContents');
 const {
   addFileImport,
   addDirImport,

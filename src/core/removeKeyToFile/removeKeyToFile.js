@@ -1,9 +1,9 @@
 const fse = require('fs-extra');
 const path = require('path');
 const { success, error } = require('console-log-cmd');
-const CacheFilesKeyMap = require('../cacheFilesKeyMap');
 const {getModuleOptions, getRelativeDir} = require('../../utils/moduleOptions');
 const { readFile, writeFile } = require('../../utils/cacheFile');
+const cacheFile = require('../utils/cache/cacheFile');
 
 /**
  * 移动key到指定文件
@@ -20,57 +20,64 @@ function removeKeyToFile(
     syncQuotes: '\'',
   };
   const moduleExports = 'export default';
+  cacheFile.clearAll();
   keyValuePathList.forEach(keyValuePathes => {
     const { key, keyValue, pathes, } = keyValuePathes;
     const newFile = path.join(root, rootSubDir, `${pathes.join('/').replace(/\/[^\/]+$/, '')}${extension}`);
-    const exist = fse.existsSync(newFile);
-    if (exist) {
-      readFile(newFile).then((content) => {
-        let hasCurlyBrace = false;
-        let result = content.replace(/([{,]?)(\s*)(}.*\s*)$/, (all, $1, $2, $3) => {
-          hasCurlyBrace = true;
+    let cacheValue = cacheFile.get(newFile);
+    if (!cacheValue) {
+      const exist = fse.existsSync(newFile);
+      if(exist){
+        readFile(newFile).then((content) => {
+          cacheFile.set(newFile, cacheValue = {
+            content,
+            keys: [],
+          });
+        });
+      }
+    }
+    if (cacheValue) {
+      const { content, keys } = cacheValue;
+      let result = content;
+      // 进行key值替换, 为了配合国际化更新的一个文件，方便覆盖
+      result = content.replace(new RegExp(`([^\\n]*['"]?${key}+['"]?\\s*:\\s*)([^\\n]*)(\\s*,?\\s*\\n)`, 'g'), (all, $1, value, $3) => {
+        const valueReplace = value.replace(/^(['"])(.*)(['"])/, (all, $1, value, $3) => `${$1}${keyValue}${$3}`);
+        return `${$1}${valueReplace}${$3}`;
+      });
+      if (result === content) {
+        result = content.replace(/([{,]?)(\s*)(}.*\s*)$/, (all, $1, $2, $3) => {
           return `${$1||','}${$2.match(/\\n/) ? $2 : '\n'}${createKeyValue(key, keyValue, projectConfig)}${$3}`;
         });
-        if (!hasCurlyBrace) {
+        if (result === content) {
           if (content.indexOf(moduleExports) === -1) {
             result += moduleExports;
           }
           result = result + ` {\n${createKeyValue(key, keyValue, projectConfig)}};`;
         }
-
-        // 判断文件不包含该值后 添加
-        if(!CacheFilesKeyMap.getSingletonCacheKeyMap().hasKeyByFile(newFile, key)){
-          writeFile(newFile, result).then(result => {
-            if (result === false) {
-              error(`[文件同步] 添加Key ${key} 失败: ${getRelativeDir(newFile)}`);
-            } else {
-              success(`[文件同步] 添加Key ${key} 成功: ${getRelativeDir(newFile)}`);
-            }
-          });
-        }
+      }
+      keys.push(key);
+      cacheFile.set(newFile, {
+        content: result,
+        keys,
       });
     } else {
-      fse.ensureDirSync(newFile.replace(/\/[^\/]+$/, ''));
-
-      writeFile(newFile, `${moduleExports} {\n${createKeyValue(key, keyValue, projectConfig)}};`).then(result => {
-        if (result === false) {
-          error(`[文件同步] 添加Key ${key} 失败: ${getRelativeDir(newFile)}`);
-        } else {
-          success(`[文件同步] 添加Key ${key} 成功: ${getRelativeDir(newFile)}`);
-        }
+      cacheFile.set(newFile, {
+        content: `${moduleExports} {\n${createKeyValue(key, keyValue, projectConfig)}};`,
+        keys: [ key ],
       });
-      /*// ensureDir需要异步，否则导致多级目录同时创建时监控失效
-      fse.ensureDir(newFile.replace(/\/[^\/]+$/, '')).then((err) => {
-        writeFile(newFile, `${moduleExports} {\n${createKeyValue(key, keyValue, projectConfig)}};`).then(result => {
-          if (result === false) {
-            error(`[文件同步] 添加Key ${key} 失败: ${getRelativeDir(newFile)}`);
-          } else {
-            success(`[文件同步] 添加Key ${key} 成功: ${getRelativeDir(newFile)}`);
-          }
-        });
-      })*/
     }
   });
+  cacheFile.forEach(({ content, keys }, newFile) => {
+    fse.ensureDirSync(newFile.replace(/\/[^\/]+$/, ''));
+    writeFile(newFile, content).then(result => {
+      if (result === false) {
+        error(`[文件同步] 添加Key 失败: ${getRelativeDir(newFile)}`);
+      } else {
+        success(`[文件同步] 添加Key 成功: ${getRelativeDir(newFile)}`);
+      }
+    });
+  })
+
 }
 
 function createKeyValue(key, value, { syncTabWidth, syncQuotes }) {

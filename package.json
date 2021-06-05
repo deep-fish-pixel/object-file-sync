@@ -1,11 +1,12 @@
 {
   "name": "object-file-sync",
-  "version": "1.0.10",
+  "version": "1.0.11",
   "description": "object file sync",
   "main": "src/index.js",
   "scripts": {
     "start": "node test/index.js",
     "debug": "node --inspect test/index.js",
+    "pub": "sh publish.sh",
     "test": "echo \\\"Error: no dist specified\\\" && exit 1"
   },
   "repository": {
@@ -24,11 +25,12 @@
   },
   "homepage": "https://github.com/maweimaweima/object-file-sync#readme",
   "dependencies": {
-    "auto-import-module": "^1.0.11",
-    "cache-io-disk": "^1.0.0",
+    "auto-import-module": "^1.0.12",
+    "cache-io-disk": "^1.0.7",
     "chokidar": "^3.5.1",
     "console-log-cmd": "^1.0.1",
     "diff": "^5.0.0",
-    "fs-extra": "^10.0.0"
+    "fs-extra": "^10.0.0",
+    "synchronous-promise": "^2.0.15"
   }
 }

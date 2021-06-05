@@ -48,48 +48,46 @@ function syncDir(target, dist, operate, isDir, targetContentsPromises, distConte
   if (!syncDir.startTime) {
     syncDir.startTime = Date.now();
   }
-  fse.pathExists(dist)
-    .then(exists => {
-      if (operate === Operate_File_Add) {
-        if (!exists) {
-          fse.copySync(target, dist);
-          success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`);
-        }
-        const isFile = /\.\w+$/;
-        // 读取文件内容，以便做第一次修改的对比处理
-        if(target.match(isFile)){
-          readFile(target);
-        }
-        if(dist.match(isFile)){
-          readFile(dist);
-        }
-        // 对文件类型进行内容检查
-        if (Date.now() - syncDir.startTime < 3000) {
-          if (!isDir) {
-            fileReplace(target, dist, targetContentsPromises, distContentPromise);
-          }
-          if (getModuleOptions().autoImportModule) {
-            if (isDir) {
-              addDirImport(dist);
-            } else {
-              addFileImport(dist);
-            }
-          }
-        }
+  const exists = fse.pathExistsSync(dist)
+  if (operate === Operate_File_Add) {
+    if (!exists) {
+      fse.copySync(target, dist);
+      success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`);
+    }
+    const isFile = /\.\w+$/;
+    // 读取文件内容，以便做第一次修改的对比处理
+    if(target.match(isFile)){
+      readFile(target);
+    }
+    if(dist.match(isFile)){
+      readFile(dist);
+    }
+    // 对文件类型进行内容检查
+    if (Date.now() - syncDir.startTime < 3000) {
+      if (!isDir) {
+        fileReplace(target, dist, targetContentsPromises, distContentPromise);
       }
-      else if (exists && operate === Operate_File_Delete) {
-        fse.removeSync(dist);
-        CacheFilesKeyMap.getSingletonCacheKeyMap().clearFileCache(dist);
-        warn(`[文件同步] 删除成功: ${getRelativeDir(dist)}`)
-      } else if (operate === Operate_File_Change) {
-        if (exists) {
-          fileReplace(target, dist, targetContentsPromises, distContentPromise);
+      if (getModuleOptions().autoImportModule) {
+        if (isDir) {
+          addDirImport(dist);
         } else {
-          fse.copy(target, dist);
-          success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`)
+          addFileImport(dist);
         }
       }
-    });
+    }
+  }
+  else if (exists && operate === Operate_File_Delete) {
+    fse.removeSync(dist);
+    CacheFilesKeyMap.getSingletonCacheKeyMap().clearFileCache(dist);
+    warn(`[文件同步] 删除成功: ${getRelativeDir(dist)}`)
+  } else if (operate === Operate_File_Change) {
+    if (exists) {
+      fileReplace(target, dist, targetContentsPromises, distContentPromise);
+    } else {
+      fse.copy(target, dist);
+      success(`[文件同步] 复制成功: ${getRelativeDir(dist)}`)
+    }
+  }
 }
 
 Object.assign(module.exports, {

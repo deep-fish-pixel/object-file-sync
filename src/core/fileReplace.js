@@ -1,6 +1,7 @@
 const Diff = require('diff');
 const { success, error } = require('console-log-cmd');
-const { readFile, writeFile } = require('../utils/cacheFile');
+const { SynchronousPromise } = require('synchronous-promise');
+const { writeFile } = require('../utils/cacheFile');
 const getKeyValueByRepalceLine = require('./utils/string/getKeyValueByRepalceLine');
 const getDefaultValue = require('./utils/basicType/getDefaultValue');
 const { LineSeparateExpReg } = require('./constants/regExp');
@@ -15,7 +16,7 @@ const {getRelativeDir} = require('../utils/moduleOptions');
  * @param dist
  */
 module.exports = function fileReplace(target, dist, targetContentsPromises, distContentPromise) {
-  Promise.all([...targetContentsPromises, distContentPromise])
+  SynchronousPromise.all([...targetContentsPromises, distContentPromise])
     .then(([targetOldContent, targetContent, distContent]) => {
       const diffList = Diff.diffLines(distContent, targetContent);
       const diffOldTargetList = Diff.diffLines(targetOldContent, targetContent);
