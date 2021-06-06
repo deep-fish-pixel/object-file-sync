@@ -38,17 +38,21 @@ function removeKeyToFile(
     }
     if (cacheValue) {
       const { content, keys } = cacheValue;
-      let result = content;
-      // 进行key值替换, 为了配合国际化更新的一个文件，方便覆盖
+      let result;
+      let replacedFirst = false,
+        replacedSecond = false;
+        // 进行key值替换, 为了配合国际化更新的一个文件，方便覆盖
       result = content.replace(new RegExp(`([^\\n]*['"]?${key}+['"]?\\s*:\\s*)([^\\n]*)(\\s*,?\\s*\\n)`, 'g'), (all, $1, value, $3) => {
         const valueReplace = value.replace(/^(['"])(.*)(['"])/, (all, $1, value, $3) => `${$1}${keyValue}${$3}`);
+        replacedFirst = true;
         return `${$1}${valueReplace}${$3}`;
       });
-      if (result === content) {
+      if (!replacedFirst) {
         result = content.replace(/([{,]?)(\s*)(}.*\s*)$/, (all, $1, $2, $3) => {
+          replacedSecond = true;
           return `${$1||','}${$2.match(/\\n/) ? $2 : '\n'}${createKeyValue(key, keyValue, projectConfig)}${$3}`;
         });
-        if (result === content) {
+        if (!replacedSecond) {
           if (content.indexOf(moduleExports) === -1) {
             result += moduleExports;
           }

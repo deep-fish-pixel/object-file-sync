@@ -1,3 +1,4 @@
+const timestamp = require('time-stamp');
 const getKeyValueByLine = require('../utils/keyValue/getKeyValueByLine');
 const {getModuleOptions, getModulePath} = require('../../utils/moduleOptions');
 const removeKeyToFile = require('./removeKeyToFile');
@@ -8,7 +9,7 @@ const removeKeyToFile = require('./removeKeyToFile');
  * @param content
  * @returns {{removeKeyToFile: removeKeyToFile, content: string}}
  */
-module.exports = function (target, content) {
+module.exports = function (target, content, isExcludeConfig) {
   const { root, setKeyToFileSeperator } = getModuleOptions();
   // 不存在key分割管理，直接返回内容
   if (!setKeyToFileSeperator) {
@@ -22,16 +23,17 @@ module.exports = function (target, content) {
   const keyValues = [];
 
   let lines = content.split(/\n/);
-  lines = lines.filter((line => {
+  const inValideFlag = '__IN-VALIDE-FLAG__';
+  lines = lines.map((line => {
     const { key, keyValue, } = getKeyValueByLine(line);
     if (key === undefined || keyValue === undefined) {
-      return true;
+      return line;
     }
     const pathes = key.split(setKeyToFileSeperator);
     const keyFilePath = pathes.join('/').replace(/\/[^/]+$/, '');
 
     if (keyFilePath === subFilePathes || pathes.length <= 1) {
-      return true;
+      return line;
     } else {
       keyValues.push({
         key,
@@ -39,9 +41,12 @@ module.exports = function (target, content) {
         pathes,
         line,
       });
-      return false;
+      if (isExcludeConfig) {
+        return `/*replacedtime[${timestamp.utc('YYYY/MM/DD HH:mm:ss')}]*/${line}`;
+      }
+      return inValideFlag;
     }
-  }));
+  })).filter(line => line !== inValideFlag);
 
   return {
     content: lines.join('\n'),

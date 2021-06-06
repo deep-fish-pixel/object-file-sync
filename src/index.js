@@ -30,6 +30,8 @@ module.exports = function (options = {}) {
     keyMap: null,
     // 设置key文件位置的分割符，为空表示不分离
     setKeyToFileSeperator: '.',
+    // 排除同步目录
+    excludeSyncDirRegExp: null,
   }, options);
   setSyncOptions(options);
 

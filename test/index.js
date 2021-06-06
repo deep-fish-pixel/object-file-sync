@@ -20,7 +20,8 @@ setTimeout(() =>{
     },
     replacePropagationHandle: (all, $1, $2, replaceTargetMatches) => {
       return `${$1}${replaceTargetMatches.$4}${$2}`;
-    }
+    },
+    excludeSyncDirRegExp: /translate-output/,
   });
 }, 3000);
 

@@ -31,7 +31,7 @@ module.exports = function fileReplace(target, dist, targetContentsPromises, dist
       const distValue = target === dist ? targetContent: renderContent(diffList, removedObject, changeKeysObject);
 
       //对键值进行替换
-      writeFileAndRemoveKeyToFile(dist, distValue);
+      writeFileAndRemoveKeyToFile(dist, distValue, target);
       if (Object.keys(changeKeysObject).length) {
         //对键值进行替换
         writeFileAndRemoveKeyToFile(target, getAddedContent(diffList));
@@ -44,19 +44,23 @@ module.exports = function fileReplace(target, dist, targetContentsPromises, dist
     });
 }
 
-function writeFileAndRemoveKeyToFile(file, fileContent){
-  const { content, keys, removeKeyToFile } = checkAndRemoveKeyToFile(file, fileContent);
-  writeFile(file, content).then(result => {
+function writeFileAndRemoveKeyToFile(dist, fileContent, target){
+  const excludeSyncDirRegExp = getModuleOptions().excludeSyncDirRegExp;
+  const isExcludeConfig = excludeSyncDirRegExp
+  && dist.match(excludeSyncDirRegExp)
+  && dist === target;
+  const { content, keys, removeKeyToFile } = checkAndRemoveKeyToFile(dist, fileContent, isExcludeConfig);
+  writeFile(dist, content).then(result => {
     if (result === false) {
       if (keys) {
-        error(`[文件同步] 移除Key ${keys} 失败: ${getRelativeDir(file)}`);
+        error(`[文件同步] 移除Key ${keys} 失败: ${getRelativeDir(dist)}`);
       }
-      error(`[文件同步] 修改失败: ${getRelativeDir(file)}`);
+      error(`[文件同步] 修改失败: ${getRelativeDir(dist)}`);
     } else {
       if (keys) {
-        success(`[文件同步] 移除Key ${keys} 成功: ${getRelativeDir(file)}`);
+        success(`[文件同步] 移除Key ${keys} 成功: ${getRelativeDir(dist)}`);
       }
-      success(`[文件同步] 修改成功: ${getRelativeDir(file)}`);
+      success(`[文件同步] 修改成功: ${getRelativeDir(dist)}`);
     }
     removeKeyToFile();
   });

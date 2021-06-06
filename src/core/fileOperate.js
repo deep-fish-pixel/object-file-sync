@@ -26,8 +26,11 @@ function addFileSync(file) {
   // 先获取文件的新旧内容
   const fileContents = getFileContents(file);
   const dists = getSyncDirs(file, Operate_File_Add);
+  // 排除同步目录， 只单独处理自己文件
   getFilesContents(dists).forEach((distContent, index) => {
-    syncDir(file, dists[index], Operate_File_Add, false, fileContents, distContent);
+    if (passByExcludeDir(dists[index], file)) {
+      syncDir(file, dists[index], Operate_File_Add, false, fileContents, distContent);
+    }
   });
 }
 
@@ -42,7 +45,9 @@ function addDirSync(dir) {
     addDirImport(dir);
   }
   getSyncDirs(dir, Operate_File_Add).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Add, true);
+    if (passByExcludeDir(dist, dir)) {
+      syncDir(dir, dist, Operate_File_Add, true);
+    }
   });
 }
 
@@ -55,7 +60,9 @@ function removeFileSync(file) {
     removeFileImport(file);
   }
   getSyncDirs(file, Operate_File_Delete).forEach((dist) => {
-    syncDir(file, dist, Operate_File_Delete, false);
+    if (passByExcludeDir(dist, file)) {
+      syncDir(file, dist, Operate_File_Delete, false);
+    }
   });
 }
 
@@ -69,7 +76,9 @@ function removeDirSync(dir) {
     removeDirImport(dir);
   }
   getSyncDirs(dir, Operate_File_Delete).forEach((dist) => {
-    syncDir(dir, dist, Operate_File_Delete, true);
+    if (passByExcludeDir(dist, dir)) {
+      syncDir(dir, dist, Operate_File_Delete, true);
+    }
   });
 }
 
@@ -81,9 +90,28 @@ function changeFileSync(file) {
   // 先获取文件的新旧内容
   const fileContents = getFileContents(file);
   const dists = getSyncDirs(file, Operate_File_Change);
+  // 排除同步
   getFilesContents(dists).forEach((distContent, index) => {
-    syncDir(file, dists[index], Operate_File_Change, false, fileContents, distContent);
+    if (passByExcludeDir(dists[index], file)) {
+      syncDir(file, dists[index], Operate_File_Change, false, fileContents, distContent);
+    }
   });
+}
+
+/**
+ * 排除同步目录， 只单独处理自己文件
+ * @param dist
+ * @param target
+ * @returns {boolean}
+ */
+function passByExcludeDir(dist, target){
+  const excludeSyncDirRegExp = getModuleOptions().excludeSyncDirRegExp;
+  if (!excludeSyncDirRegExp
+    || (dist.match(excludeSyncDirRegExp) ?
+      dist === target : true)) {
+    return true;
+  }
+  return false;
 }
 
 
