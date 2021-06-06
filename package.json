@@ -1,6 +1,6 @@
 {
   "name": "object-file-sync",
-  "version": "1.0.13",
+  "version": "1.0.14",
   "description": "object file sync",
   "main": "src/index.js",
   "scripts": {
